@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Falcon Furniture</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="product-details.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="container">
+                <div class="top-bar-content">
+                    <div class="top-bar-left">
+                        <span><i class="fas fa-phone"></i> +1 (555) 123-4567</span>
+                        <span><i class="fas fa-envelope"></i> info@falconfurniture.com</span>
+                    </div>
+                    <div class="top-bar-right">
+                        <span>Welcome you to Falcon Furniture and Interiors!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Navigation -->
+        <nav class="navbar">
+            <div class="container">
+                <div class="navbar-content">
+                    <!-- Logo -->
+                    <div class="logo">
+                        <img src="https://i.imgur.com/9X8qYZL.png" alt="Falcon Furniture Logo" class="logo-img">
+                        <span class="logo-text">Falcon Furniture</span>
+                    </div>
+
+                    <!-- Navigation Menu -->
+                    <ul class="nav-menu">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#" class="active">Products</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+
+                    <!-- Search Bar -->
+                    <div class="search-container">
+                        <input type="text" class="search-input" id="searchInput" placeholder="Search for Sofa...">
+                        <button class="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+
+                    <!-- Action Icons -->
+                    <div class="action-icons">
+                        <a href="#" class="icon-link" title="Wishlist">
+                            <i class="far fa-heart"></i>
+                            <span class="badge">3</span>
+                        </a>
+                        <a href="#" class="icon-link" title="Cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="badge">2</span>
+                        </a>
+                        <a href="#" class="icon-link" title="Profile">
+                            <i class="far fa-user"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="container">
+            <a href="index.html">Home</a>
+            <i class="fas fa-chevron-right"></i>
+            <a href="#">Living Room</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Modern L-Shape Sofa</span>
+        </div>
+    </div>
+
+    <!-- Product Details Section -->
+    <section class="product-details-section">
+        <div class="container">
+            <div class="product-details-grid">
+                <!-- Image Gallery -->
+                <div class="image-gallery">
+                    <div class="main-image-container">
+                        <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&h=800&fit=crop" alt="Main Product" id="mainImage" class="main-image">
+                        <button class="zoom-btn"><i class="fas fa-search-plus"></i></button>
+                    </div>
+                    <div class="thumbnail-container">
+                        <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200&h=200&fit=crop" alt="Thumbnail 1" class="thumbnail active">
+                        <img src="https://images.unsplash.com/photo-1540574163026-643ea20ade25?w=200&h=200&fit=crop" alt="Thumbnail 2" class="thumbnail">
+                        <img src="https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=200&h=200&fit=crop" alt="Thumbnail 3" class="thumbnail">
+                        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&h=200&fit=crop" alt="Thumbnail 4" class="thumbnail">
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="product-details-info">
+                    <span class="product-badge-detail new">New Arrival</span>
+                    <h1 class="product-title-detail">Modern L-Shape Sofa</h1>
+                    
+                    <div class="product-rating-detail">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <span class="rating-text">4.5 (128 reviews)</span>
+                    </div>
+
+                    <div class="product-price-detail">
+                        <span class="current-price-detail">₹45,999</span>
+                        <span class="original-price-detail">₹59,999</span>
+                        <span class="discount-detail">23% OFF</span>
+                    </div>
+
+                    <p class="product-description">
+                        Experience ultimate comfort with our Modern L-Shape Sofa. Crafted with premium fabric and high-density foam, this sofa combines contemporary design with exceptional durability. Perfect for modern living rooms, it offers ample seating space for family and guests.
+                    </p>
+
+                    <div class="product-features">
+                        <h3>Key Features:</h3>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Premium fabric upholstery</li>
+                            <li><i class="fas fa-check-circle"></i> High-density foam cushions</li>
+                            <li><i class="fas fa-check-circle"></i> Solid wood frame construction</li>
+                            <li><i class="fas fa-check-circle"></i> Easy to clean and maintain</li>
+                            <li><i class="fas fa-check-circle"></i> 5-year warranty included</li>
+                        </ul>
+                    </div>
+
+                    <div class="product-options">
+                        <div class="option-group">
+                            <label>Color:</label>
+                            <div class="color-options">
+                                <button class="color-btn active" style="background-color: #8B7355;" title="Brown"></button>
+                                <button class="color-btn" style="background-color: #4A4A4A;" title="Gray"></button>
+                                <button class="color-btn" style="background-color: #2C3E50;" title="Navy"></button>
+                                <button class="color-btn" style="background-color: #E8E8E8;" title="Beige"></button>
+                            </div>
+                        </div>
+
+                        <div class="option-group">
+                            <label>Quantity:</label>
+                            <div class="quantity-selector">
+                                <button class="qty-btn minus"><i class="fas fa-minus"></i></button>
+                                <input type="number" class="qty-input" value="1" min="1" max="10">
+                                <button class="qty-btn plus"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-actions">
+                        <button class="add-to-cart-detail-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
+                        <button class="wishlist-detail-btn">
+                            <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-truck"></i>
+                            <span>Free delivery on orders over ₹500</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-undo"></i>
+                            <span>30-day return policy</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>2-year warranty</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Products Section -->
+    <section class="related-products-section">
+        <div class="container">
+            <h2 class="section-title">Related Products</h2>
+            <div class="related-products-grid">
+                <!-- Related Product 1 -->
+                <div class="product-card">
+                    <div class="product-image-wrapper">
+                        <button class="wishlist-btn">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <img src="https://images.unsplash.com/photo-1540574163026-643ea20ade25?w=400&h=400&fit=crop" alt="3-Seater Sofa" class="product-image">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Classic 3-Seater Sofa</h3>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="rating-count">(4.2)</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="current-price">₹38,999</span>
+                            <span class="original-price">₹49,999</span>
+                        </div>
+                        <button class="add-to-cart-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Related Product 2 -->
+                <div class="product-card">
+                    <div class="product-image-wrapper">
+                        <span class="product-badge sale">Sale</span>
+                        <button class="wishlist-btn">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <img src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=400&h=400&fit=crop" alt="Coffee Table" class="product-image">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Marble Top Coffee Table</h3>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="rating-count">(4.6)</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="current-price">₹9,999</span>
+                            <span class="original-price">₹14,999</span>
+                        </div>
+                        <button class="add-to-cart-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Related Product 3 -->
+                <div class="product-card">
+                    <div class="product-image-wrapper">
+                        <button class="wishlist-btn">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop" alt="Accent Chair" class="product-image">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Velvet Accent Chair</h3>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="rating-count">(4.9)</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="current-price">₹15,999</span>
+                            <span class="original-price">₹21,999</span>
+                        </div>
+                        <button class="add-to-cart-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Related Product 4 -->
+                <div class="product-card">
+                    <div class="product-image-wrapper">
+                        <span class="product-badge new">New</span>
+                        <button class="wishlist-btn">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <img src="https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=400&h=400&fit=crop" alt="TV Stand" class="product-image">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">Modern TV Stand</h3>
+                        <div class="product-rating">
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span class="rating-count">(4.3)</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="current-price">₹12,999</span>
+                            <span class="original-price">₹17,999</span>
+                        </div>
+                        <button class="add-to-cart-btn">
+                            <i class="fas fa-shopping-cart"></i>
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+    <script src="product-details.js"></script>
+</body>
+</html>
