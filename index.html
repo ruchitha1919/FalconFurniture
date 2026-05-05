@@ -13,10 +13,6 @@
         <div class="top-bar">
             <div class="container">
                 <div class="top-bar-content">
-                    <div class="top-bar-left">
-                        <span><i class="fas fa-phone"></i> +1 (555) 123-4567</span>
-                        <span><i class="fas fa-envelope"></i> info@falconfurniture.com</span>
-                    </div>
                     <div class="top-bar-right">
                         <span>Welcome you to Falcon Furniture and Interiors!</span>
                     </div>
@@ -36,10 +32,10 @@
 
                     <!-- Navigation Menu -->
                     <ul class="nav-menu">
-                        <li><a href="#" class="active">Home</a></li>
-                        <li><a href="#">About</a></li>
-                        <li><a href="#">Products</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="#home" class="active">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#products">Products</a></li>
+                        <li><a href="#contact">Contact</a></li>
                     </ul>
 
                     <!-- Search Bar -->
@@ -70,7 +66,7 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="hero">
+    <section class="hero" id="home">
         <div class="hero-carousel">
             <div class="carousel-slide active">
                 <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1600&h=800&fit=crop" alt="Luxury Sofa">
@@ -102,6 +98,55 @@
             <span class="indicator active" data-slide="0"></span>
             <span class="indicator" data-slide="1"></span>
             <span class="indicator" data-slide="2"></span>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=800&h=600&fit=crop" alt="Falcon Furniture Showroom">
+                    <div class="about-badge">
+                        <span class="badge-number">15+</span>
+                        <span class="badge-text">Years Experience</span>
+                    </div>
+                </div>
+                <div class="about-content">
+                    <span class="about-subtitle">About Us</span>
+                    <h2 class="about-title">Welcome to Falcon Furniture and Interiors</h2>
+                    <p class="about-description">
+                        We are passionate about creating beautiful, functional spaces that reflect your unique style. With over 15 years of experience in the furniture industry, we've helped thousands of customers transform their houses into dream homes.
+                    </p>
+                    <p class="about-description">
+                        Our commitment to quality craftsmanship, premium materials, and exceptional customer service has made us a trusted name in furniture and interior design. Every piece in our collection is carefully selected to ensure it meets our high standards of excellence.
+                    </p>
+                    <div class="about-features">
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <h4>Premium Quality</h4>
+                                <p>Handpicked furniture with superior craftsmanship</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <h4>Expert Design Team</h4>
+                                <p>Professional interior designers at your service</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <h4>Customer Satisfaction</h4>
+                                <p>5000+ happy customers and counting</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="learn-more-btn">Learn More About Us</button>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -176,8 +221,53 @@
         </div>
     </section>
 
+    <!-- Process Section -->
+    <section class="process-section">
+        <div class="container">
+            <div class="process-header">
+                <span class="process-subtitle">How It Works</span>
+                <h2 class="section-title">Our Simple Process</h2>
+                <p class="process-intro">From browsing to delivery, we make furniture shopping easy and enjoyable</p>
+            </div>
+            <div class="process-grid">
+                <div class="process-card">
+                    <div class="process-icon">
+                        <i class="fas fa-search"></i>
+                        <span class="process-number">01</span>
+                    </div>
+                    <h3 class="process-title">Browse & Select</h3>
+                    <p class="process-description">Explore our extensive collection of premium furniture and select pieces that match your style and needs.</p>
+                </div>
+                <div class="process-card">
+                    <div class="process-icon">
+                        <i class="fas fa-palette"></i>
+                        <span class="process-number">02</span>
+                    </div>
+                    <h3 class="process-title">Customize</h3>
+                    <p class="process-description">Choose from various colors, materials, and sizes to personalize your furniture to perfection.</p>
+                </div>
+                <div class="process-card">
+                    <div class="process-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="process-number">03</span>
+                    </div>
+                    <h3 class="process-title">Order</h3>
+                    <p class="process-description">Add items to cart, review your order, and complete secure checkout with multiple payment options.</p>
+                </div>
+                <div class="process-card">
+                    <div class="process-icon">
+                        <i class="fas fa-truck"></i>
+                        <span class="process-number">04</span>
+                    </div>
+                    <h3 class="process-title">Delivery & Setup</h3>
+                    <p class="process-description">We deliver and professionally install your furniture at your doorstep, ensuring perfect placement.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Product Section -->
-    <section class="product-section">
+    <section class="product-section" id="products">
         <div class="container">
             <h2 class="section-title">Featured Products</h2>
             <div class="product-grid">

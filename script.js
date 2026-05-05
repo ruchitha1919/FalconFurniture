@@ -75,13 +75,46 @@ indicators.forEach((indicator, index) => {
 // Start auto-slide
 startAutoSlide();
 
-// Optional: Add smooth scroll behavior for navigation links
+// Smooth scroll behavior for navigation links
 document.querySelectorAll('.nav-menu a').forEach(link => {
     link.addEventListener('click', function(e) {
+        e.preventDefault();
+        
         // Remove active class from all links
         document.querySelectorAll('.nav-menu a').forEach(l => l.classList.remove('active'));
+        
         // Add active class to clicked link
         this.classList.add('active');
+        
+        // Get target section
+        const targetId = this.getAttribute('href');
+        if (targetId && targetId !== '#contact') {
+            const targetSection = document.querySelector(targetId);
+            if (targetSection) {
+                targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    });
+});
+
+// Update active nav on scroll
+window.addEventListener('scroll', function() {
+    const sections = document.querySelectorAll('section[id]');
+    const scrollPosition = window.scrollY + 100;
+    
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+        const sectionId = section.getAttribute('id');
+        
+        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${sectionId}`) {
+                    link.classList.add('active');
+                }
+            });
+        }
     });
 });
 
