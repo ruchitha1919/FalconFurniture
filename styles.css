@@ -10,8 +10,8 @@ body {
 }
 
 .logo-img{
-    width:  500px;
-    height: 500px;
+    width:  850px;
+    height: 1000px;
 }
 
 .container {
@@ -366,6 +366,13 @@ body {
     padding: 25px;
     color: white;
     z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.category-text {
+    flex: 1;
 }
 
 .category-title {
@@ -383,6 +390,39 @@ body {
     font-size: 14px;
     color: rgba(255, 255, 255, 0.9);
     font-weight: 500;
+}
+
+.category-arrow {
+    width: 50px;
+    height: 50px;
+    background-color: #8B5E3C;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.category-arrow:hover {
+    background-color: #A0522D;
+    transform: scale(1.1);
+}
+
+.category-card:hover .category-arrow {
+    animation: arrowBounce 0.6s ease infinite;
+}
+
+@keyframes arrowBounce {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(5px);
+    }
 }
 
 /* Subcategory Dropdown */
