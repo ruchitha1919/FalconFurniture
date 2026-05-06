@@ -139,7 +139,59 @@ searchInput.addEventListener('keypress', function(e) {
     }
 });
 
-// Wishlist functionality
+// Wishlist Modal functionality
+const wishlistModal = document.getElementById('wishlistModal');
+const wishlistIcon = document.getElementById('wishlistIcon');
+const wishlistModalClose = document.getElementById('wishlistModalClose');
+const wishlistForm = document.getElementById('wishlistForm');
+
+// Open wishlist modal when wishlist icon is clicked
+if (wishlistIcon) {
+    wishlistIcon.addEventListener('click', function(e) {
+        e.preventDefault();
+        wishlistModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    });
+}
+
+// Close wishlist modal when close button is clicked
+if (wishlistModalClose) {
+    wishlistModalClose.addEventListener('click', function() {
+        wishlistModal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Restore scrolling
+    });
+}
+
+// Close wishlist modal when clicking outside the modal content
+wishlistModal.addEventListener('click', function(e) {
+    if (e.target === wishlistModal) {
+        wishlistModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+});
+
+// Handle wishlist form submission
+if (wishlistForm) {
+    wishlistForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('wishlistName').value;
+        const email = document.getElementById('wishlistEmail').value;
+        const phone = document.getElementById('wishlistPhone').value;
+        
+        console.log('Wishlist created for:', { name, email, phone });
+        
+        // Show success message
+        alert('Thank you! Your wishlist has been created successfully.');
+        
+        // Reset form and close modal
+        wishlistForm.reset();
+        wishlistModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+}
+
+// Wishlist button functionality (for category pages)
 document.querySelectorAll('.wishlist-btn').forEach(btn => {
     btn.addEventListener('click', function(e) {
         e.preventDefault();
@@ -155,7 +207,7 @@ document.querySelectorAll('.wishlist-btn').forEach(btn => {
     });
 });
 
-// Add to cart functionality
+// Add to cart functionality (for category pages)
 document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
     btn.addEventListener('click', function() {
         const productName = this.closest('.product-card').querySelector('.product-name').textContent;
