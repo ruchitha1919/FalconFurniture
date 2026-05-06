@@ -1,3 +1,22 @@
+// Cart Management
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+// Update cart badge
+function updateCartBadge() {
+    const cartBadge = document.getElementById('cartBadge');
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    
+    if (totalItems > 0) {
+        cartBadge.textContent = totalItems;
+        cartBadge.style.display = 'flex';
+    } else {
+        cartBadge.style.display = 'none';
+    }
+}
+
+// Initialize cart badge on page load
+updateCartBadge();
+
 // Image Gallery - Thumbnail Click
 const thumbnails = document.querySelectorAll('.thumbnail');
 const mainImage = document.getElementById('mainImage');
@@ -12,7 +31,40 @@ thumbnails.forEach(thumbnail => {
         
         // Change main image
         mainImage.src = this.src.replace('w=200&h=200', 'w=800&h=800');
+        
+        // Update magnifier background
+        magnifierBox.style.backgroundImage = `url('${mainImage.src.replace('w=800&h=800', 'w=1600&h=1600')}')`;
     });
+});
+
+// Mouse Magnifier Functionality
+const mainImageContainer = document.getElementById('mainImageContainer');
+const magnifierBox = document.getElementById('magnifierBox');
+
+mainImageContainer.addEventListener('mousemove', function(e) {
+    const rect = mainImageContainer.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Position the magnifier box
+    const magnifierSize = 150;
+    magnifierBox.style.left = (x - magnifierSize / 2) + 'px';
+    magnifierBox.style.top = (y - magnifierSize / 2) + 'px';
+    
+    // Calculate background position for zoom effect
+    const bgPosX = -(x * 2 - magnifierSize / 2);
+    const bgPosY = -(y * 2 - magnifierSize / 2);
+    
+    magnifierBox.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
+    magnifierBox.style.backgroundImage = `url('${mainImage.src.replace('w=800&h=800', 'w=1600&h=1600')}')`;
+});
+
+mainImageContainer.addEventListener('mouseleave', function() {
+    magnifierBox.style.opacity = '0';
+});
+
+mainImageContainer.addEventListener('mouseenter', function() {
+    magnifierBox.style.opacity = '1';
 });
 
 // Quantity Selector
@@ -20,20 +72,22 @@ const qtyInput = document.querySelector('.qty-input');
 const minusBtn = document.querySelector('.qty-btn.minus');
 const plusBtn = document.querySelector('.qty-btn.plus');
 
-minusBtn.addEventListener('click', function() {
-    let currentValue = parseInt(qtyInput.value);
-    if (currentValue > 1) {
-        qtyInput.value = currentValue - 1;
-    }
-});
+if (minusBtn && plusBtn && qtyInput) {
+    minusBtn.addEventListener('click', function() {
+        let currentValue = parseInt(qtyInput.value);
+        if (currentValue > 1) {
+            qtyInput.value = currentValue - 1;
+        }
+    });
 
-plusBtn.addEventListener('click', function() {
-    let currentValue = parseInt(qtyInput.value);
-    let maxValue = parseInt(qtyInput.max);
-    if (currentValue < maxValue) {
-        qtyInput.value = currentValue + 1;
-    }
-});
+    plusBtn.addEventListener('click', function() {
+        let currentValue = parseInt(qtyInput.value);
+        let maxValue = parseInt(qtyInput.max);
+        if (currentValue < maxValue) {
+            qtyInput.value = currentValue + 1;
+        }
+    });
+}
 
 // Color Selection
 const colorBtns = document.querySelectorAll('.color-btn');
@@ -48,49 +102,107 @@ colorBtns.forEach(btn => {
 // Wishlist Toggle
 const wishlistDetailBtn = document.querySelector('.wishlist-detail-btn');
 
-wishlistDetailBtn.addEventListener('click', function() {
-    this.classList.toggle('active');
-    const icon = this.querySelector('i');
-    if (this.classList.contains('active')) {
-        icon.classList.remove('far');
-        icon.classList.add('fas');
-    } else {
-        icon.classList.remove('fas');
-        icon.classList.add('far');
-    }
-});
+if (wishlistDetailBtn) {
+    wishlistDetailBtn.addEventListener('click', function() {
+        this.classList.toggle('active');
+        const icon = this.querySelector('i');
+        if (this.classList.contains('active')) {
+            icon.classList.remove('far');
+            icon.classList.add('fas');
+        } else {
+            icon.classList.remove('fas');
+            icon.classList.add('far');
+        }
+    });
+}
 
-// Add to Cart
+// Add to Cart Functionality
 const addToCartDetailBtn = document.querySelector('.add-to-cart-detail-btn');
 
-addToCartDetailBtn.addEventListener('click', function() {
-    const quantity = qtyInput.value;
-    const productName = document.querySelector('.product-title-detail').textContent;
-    
-    console.log(`Added ${quantity} x ${productName} to cart`);
-    
-    // Visual feedback
-    const originalHTML = this.innerHTML;
-    this.innerHTML = '<i class="fas fa-check"></i> Added to Cart!';
-    this.style.backgroundColor = '#27ae60';
-    
-    setTimeout(() => {
-        this.innerHTML = originalHTML;
-        this.style.backgroundColor = '';
-    }, 2000);
-});
+if (addToCartDetailBtn) {
+    addToCartDetailBtn.addEventListener('click', function() {
+        const quantity = parseInt(qtyInput.value);
+        const productName = document.querySelector('.product-title-detail').textContent;
+        const productPrice = document.querySelector('.current-price-detail').textContent;
+        const productImage = mainImage.src;
+        
+        // Get selected color
+        const selectedColor = document.querySelector('.color-btn.active');
+        const colorTitle = selectedColor ? selectedColor.getAttribute('title') : 'Default';
+        
+        // Create product object
+        const product = {
+            id: Date.now(), // Simple unique ID
+            name: productName,
+            price: productPrice,
+            quantity: quantity,
+            color: colorTitle,
+            image: productImage
+        };
+        
+        // Add to cart
+        cart.push(product);
+        
+        // Save to localStorage
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Update cart badge
+        updateCartBadge();
+        
+        console.log(`Added ${quantity} x ${productName} (${colorTitle}) to cart`);
+        console.log('Current cart:', cart);
+        
+        // Visual feedback
+        const originalHTML = this.innerHTML;
+        this.innerHTML = '<i class="fas fa-check"></i> Added to Cart!';
+        this.style.backgroundColor = '#27ae60';
+        
+        setTimeout(() => {
+            this.innerHTML = originalHTML;
+            this.style.backgroundColor = '';
+        }, 2000);
+    });
+}
 
-// Zoom functionality
-const zoomBtn = document.querySelector('.zoom-btn');
-const mainImageContainer = document.querySelector('.main-image-container');
+// Related Products - Add to Cart
+const relatedAddToCartBtns = document.querySelectorAll('.related-products-section .add-to-cart-btn');
 
-zoomBtn.addEventListener('click', function() {
-    mainImageContainer.classList.toggle('zoomed');
-    if (mainImageContainer.classList.contains('zoomed')) {
-        mainImage.style.transform = 'scale(1.5)';
-        this.innerHTML = '<i class="fas fa-search-minus"></i>';
-    } else {
-        mainImage.style.transform = 'scale(1)';
-        this.innerHTML = '<i class="fas fa-search-plus"></i>';
-    }
+relatedAddToCartBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+        const productCard = this.closest('.product-card');
+        const productName = productCard.querySelector('.product-name').textContent;
+        const productPrice = productCard.querySelector('.current-price').textContent;
+        const productImage = productCard.querySelector('.product-image').src;
+        
+        // Create product object
+        const product = {
+            id: Date.now(),
+            name: productName,
+            price: productPrice,
+            quantity: 1,
+            color: 'Default',
+            image: productImage
+        };
+        
+        // Add to cart
+        cart.push(product);
+        
+        // Save to localStorage
+        localStorage.setItem('cart', JSON.stringify(cart));
+        
+        // Update cart badge
+        updateCartBadge();
+        
+        console.log(`Added ${productName} to cart`);
+        
+        // Visual feedback
+        const originalHTML = this.innerHTML;
+        this.innerHTML = '<i class="fas fa-check"></i> Added!';
+        this.style.backgroundColor = '#27ae60';
+        
+        setTimeout(() => {
+            this.innerHTML = originalHTML;
+            this.style.backgroundColor = '';
+        }, 2000);
+    });
 });

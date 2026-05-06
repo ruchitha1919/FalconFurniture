@@ -52,13 +52,13 @@
 
                     <!-- Action Icons -->
                     <div class="action-icons">
-                        <a href="#" class="icon-link" title="Wishlist">
+                        <a href="#" class="icon-link" id="wishlistIcon" title="Wishlist">
                             <i class="far fa-heart"></i>
-                            <span class="badge">3</span>
+                            <span class="badge" id="wishlistBadge" style="display: none;">0</span>
                         </a>
-                        <a href="#" class="icon-link" title="Cart">
+                        <a href="#" class="icon-link" id="cartIcon" title="Cart">
                             <i class="fas fa-shopping-cart"></i>
-                            <span class="badge">2</span>
+                            <span class="badge" id="cartBadge" style="display: none;">0</span>
                         </a>
                         <a href="#" class="icon-link" title="Profile">
                             <i class="far fa-user"></i>
@@ -86,9 +86,9 @@
             <div class="product-details-grid">
                 <!-- Image Gallery -->
                 <div class="image-gallery">
-                    <div class="main-image-container">
+                    <div class="main-image-container" id="mainImageContainer">
                         <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&h=800&fit=crop" alt="Main Product" id="mainImage" class="main-image">
-                        <button class="zoom-btn"><i class="fas fa-search-plus"></i></button>
+                        <div class="magnifier-box" id="magnifierBox"></div>
                     </div>
                     <div class="thumbnail-container">
                         <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200&h=200&fit=crop" alt="Thumbnail 1" class="thumbnail active">

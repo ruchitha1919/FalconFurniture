@@ -1,3 +1,24 @@
+// Cart Management
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+// Update cart badge
+function updateCartBadge() {
+    const cartBadge = document.getElementById('cartBadge');
+    if (cartBadge) {
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        
+        if (totalItems > 0) {
+            cartBadge.textContent = totalItems;
+            cartBadge.style.display = 'flex';
+        } else {
+            cartBadge.style.display = 'none';
+        }
+    }
+}
+
+// Initialize cart badge on page load
+updateCartBadge();
+
 // Auto-changing search placeholder
 const searchInput = document.getElementById('searchInput');
 const placeholders = ['Sofa', 'Mattress', 'Chair'];
