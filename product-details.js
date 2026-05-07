@@ -1,5 +1,5 @@
 // Cart Management
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let cart = JSON.parse(localStorage.getItem('falconCart')) || [];
 
 // Update cart badge
 function updateCartBadge() {
@@ -46,17 +46,27 @@ mainImageContainer.addEventListener('mousemove', function(e) {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     
-    // Position the magnifier box
-    const magnifierSize = 150;
-    magnifierBox.style.left = (x - magnifierSize / 2) + 'px';
-    magnifierBox.style.top = (y - magnifierSize / 2) + 'px';
+    // Position the magnifier box (square box that follows mouse)
+    const magnifierSize = 200;
+    let magnifierX = x - magnifierSize / 2;
+    let magnifierY = y - magnifierSize / 2;
     
-    // Calculate background position for zoom effect
-    const bgPosX = -(x * 2 - magnifierSize / 2);
-    const bgPosY = -(y * 2 - magnifierSize / 2);
+    // Keep magnifier within image bounds
+    if (magnifierX < 0) magnifierX = 0;
+    if (magnifierY < 0) magnifierY = 0;
+    if (magnifierX > rect.width - magnifierSize) magnifierX = rect.width - magnifierSize;
+    if (magnifierY > rect.height - magnifierSize) magnifierY = rect.height - magnifierSize;
     
-    magnifierBox.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
+    magnifierBox.style.left = magnifierX + 'px';
+    magnifierBox.style.top = magnifierY + 'px';
+    
+    // Calculate background position for 3x zoom effect
+    const zoomLevel = 3;
+    const bgPosX = -(magnifierX * zoomLevel);
+    const bgPosY = -(magnifierY * zoomLevel);
+    
     magnifierBox.style.backgroundImage = `url('${mainImage.src.replace('w=800&h=800', 'w=1600&h=1600')}')`;
+    magnifierBox.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
 });
 
 mainImageContainer.addEventListener('mouseleave', function() {
@@ -144,7 +154,7 @@ if (addToCartDetailBtn) {
         cart.push(product);
         
         // Save to localStorage
-        localStorage.setItem('cart', JSON.stringify(cart));
+        localStorage.setItem('falconCart', JSON.stringify(cart));
         
         // Update cart badge
         updateCartBadge();
@@ -188,7 +198,7 @@ relatedAddToCartBtns.forEach(btn => {
         cart.push(product);
         
         // Save to localStorage
-        localStorage.setItem('cart', JSON.stringify(cart));
+        localStorage.setItem('falconCart', JSON.stringify(cart));
         
         // Update cart badge
         updateCartBadge();
