@@ -4,13 +4,15 @@ let cart = JSON.parse(localStorage.getItem('falconCart')) || [];
 // Update cart badge
 function updateCartBadge() {
     const cartBadge = document.getElementById('cartBadge');
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    
-    if (totalItems > 0) {
-        cartBadge.textContent = totalItems;
-        cartBadge.style.display = 'flex';
-    } else {
-        cartBadge.style.display = 'none';
+    if (cartBadge) {
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        
+        if (totalItems > 0) {
+            cartBadge.textContent = totalItems;
+            cartBadge.style.display = 'flex';
+        } else {
+            cartBadge.style.display = 'none';
+        }
     }
 }
 
@@ -216,79 +218,3 @@ relatedAddToCartBtns.forEach(btn => {
         }, 2000);
     });
 });
-
-
-// Cart Modal Functionality
-const cartIconLink = document.getElementById('cartIconLink');
-const cartModal = document.getElementById('cartModal');
-const cartOverlay = document.getElementById('cartOverlay');
-const cartClose = document.getElementById('cartClose');
-const cartBody = document.getElementById('cartBody');
-const cartFooter = document.getElementById('cartFooter');
-const cartTotal = document.getElementById('cartTotal');
-
-function renderCartModal() {
-    if (cart.length === 0) {
-        cartBody.innerHTML = `
-            <div class="cart-empty">
-                <i class="fas fa-shopping-cart"></i>
-                <p>No items added to cart</p>
-            </div>
-        `;
-        cartFooter.style.display = 'none';
-    } else {
-        let total = 0;
-        cartBody.innerHTML = cart.map((item, index) => {
-            const price = parseInt(item.price.replace(/[₹,]/g, ''));
-            total += price * item.quantity;
-            
-            return `
-                <div class="cart-item">
-                    <img src="${item.image}" alt="${item.name}" class="cart-item-image">
-                    <div class="cart-item-details">
-                        <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-color">Color: ${item.color}</div>
-                        <div class="cart-item-price">${item.price}</div>
-                        <div class="cart-item-qty">Quantity: ${item.quantity}</div>
-                    </div>
-                    <button class="cart-item-remove" onclick="removeFromCartModal(${index})">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            `;
-        }).join('');
-        
-        cartTotal.textContent = `₹${total.toLocaleString()}`;
-        cartFooter.style.display = 'block';
-    }
-}
-
-function removeFromCartModal(index) {
-    cart.splice(index, 1);
-    localStorage.setItem('falconCart', JSON.stringify(cart));
-    updateCartBadge();
-    renderCartModal();
-}
-
-if (cartIconLink) {
-    cartIconLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        renderCartModal();
-        cartModal.classList.add('active');
-        cartOverlay.classList.add('active');
-    });
-}
-
-if (cartClose) {
-    cartClose.addEventListener('click', function() {
-        cartModal.classList.remove('active');
-        cartOverlay.classList.remove('active');
-    });
-}
-
-if (cartOverlay) {
-    cartOverlay.addEventListener('click', function() {
-        cartModal.classList.remove('active');
-        cartOverlay.classList.remove('active');
-    });
-}
