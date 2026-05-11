@@ -1,5 +1,199 @@
 // Cart Management
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let wishlist = JSON.parse(localStorage.getItem('falconWishlist')) || [];
+
+// Firebase products loading
+const USE_FIREBASE = typeof firebase !== 'undefined';
+let products = [];
+
+// Load products from Firebase or use default products
+function loadProducts() {
+    const productGrid = document.getElementById('productGrid');
+    
+    if (!productGrid) return;
+
+    if (USE_FIREBASE && firebaseDatabase) {
+        // Load from Firebase
+        const productsRef = firebaseDatabase.ref('products');
+        productsRef.on('value', (snapshot) => {
+            products = [];
+            snapshot.forEach((childSnapshot) => {
+                products.push({
+                    id: childSnapshot.key,
+                    ...childSnapshot.val()
+                });
+            });
+            renderProducts();
+        });
+    } else {
+        // Use default products if Firebase not available
+        products = getDefaultProducts();
+        renderProducts();
+    }
+}
+
+// Render products to the grid
+function renderProducts() {
+    const productGrid = document.getElementById('productGrid');
+    if (!productGrid) return;
+
+    if (products.length === 0) {
+        productGrid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: #999;">
+                <i class="fas fa-box-open" style="font-size: 64px; margin-bottom: 20px; opacity: 0.3;"></i>
+                <p style="font-size: 18px;">No products available yet</p>
+            </div>
+        `;
+        return;
+    }
+
+    productGrid.innerHTML = products.map(product => {
+        const isInWishlist = wishlist.some(item => item.id === product.id);
+        return `
+            <div class="product-card">
+                <div class="product-image-wrapper">
+                    <button class="wishlist-icon-btn ${isInWishlist ? 'active' : ''}" onclick="toggleWishlist(event, '${product.id}')">
+                        <i class="${isInWishlist ? 'fas' : 'far'} fa-heart"></i>
+                    </button>
+                    ${product.badge ? `<span class="product-badge ${product.badge.toLowerCase()}">${product.badge}</span>` : ''}
+                    <img src="${product.image}" alt="${product.name}" class="product-image" onclick="goToProductDetails('${product.id}')">
+                </div>
+                <div class="product-info" onclick="goToProductDetails('${product.id}')">
+                    <h3 class="product-name">${product.name}</h3>
+                    <div class="product-price">
+                        <span class="current-price">₹${formatPrice(product.price)}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Toggle wishlist
+function toggleWishlist(event, productId) {
+    event.stopPropagation();
+    
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    const existingIndex = wishlist.findIndex(item => item.id === productId);
+    
+    if (existingIndex > -1) {
+        // Remove from wishlist
+        wishlist.splice(existingIndex, 1);
+    } else {
+        // Add to wishlist
+        wishlist.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image
+        });
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('falconWishlist', JSON.stringify(wishlist));
+    
+    // Update wishlist badge
+    updateWishlistBadge();
+    
+    // Re-render products to update wishlist icons
+    renderProducts();
+}
+
+// Update wishlist badge
+function updateWishlistBadge() {
+    const wishlistBadge = document.getElementById('wishlistBadge');
+    if (wishlistBadge) {
+        if (wishlist.length > 0) {
+            wishlistBadge.textContent = wishlist.length;
+            wishlistBadge.style.display = 'flex';
+        } else {
+            wishlistBadge.style.display = 'none';
+        }
+    }
+}
+
+// Go to product details
+function goToProductDetails(productId) {
+    window.location.href = `product-details.html?id=${productId}`;
+}
+
+// Format price with commas
+function formatPrice(price) {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+// Default products (fallback)
+function getDefaultProducts() {
+    return [
+        {
+            id: 'default-1',
+            name: 'Modern L-Shape Sofa',
+            price: '45999',
+            image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop',
+            category: 'Living Room',
+            badge: 'New'
+        },
+        {
+            id: 'default-2',
+            name: 'Luxury King Size Bed',
+            price: '32499',
+            image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400&h=400&fit=crop',
+            category: 'Bedroom',
+            badge: 'Sale'
+        },
+        {
+            id: 'default-3',
+            name: 'Ergonomic Office Chair',
+            price: '12999',
+            image: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?w=400&h=400&fit=crop',
+            category: 'Office'
+        },
+        {
+            id: 'default-4',
+            name: '6-Seater Dining Table Set',
+            price: '28999',
+            image: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=400&h=400&fit=crop',
+            category: 'Dining',
+            badge: 'New'
+        },
+        {
+            id: 'default-5',
+            name: 'Modern Office Desk',
+            price: '15999',
+            image: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=400&h=400&fit=crop',
+            category: 'Office'
+        },
+        {
+            id: 'default-6',
+            name: 'Comfortable Recliner',
+            price: '22999',
+            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop',
+            category: 'Living Room'
+        },
+        {
+            id: 'default-7',
+            name: 'Wooden Wardrobe',
+            price: '35999',
+            image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=400&h=400&fit=crop',
+            category: 'Bedroom'
+        },
+        {
+            id: 'default-8',
+            name: 'Study Table with Storage',
+            price: '18999',
+            image: 'https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?w=400&h=400&fit=crop',
+            category: 'Office'
+        }
+    ];
+}
+
+// Initialize products on page load
+if (document.getElementById('productGrid')) {
+    loadProducts();
+    updateWishlistBadge();
+}
 
 // Update cart badge
 function updateCartBadge() {
