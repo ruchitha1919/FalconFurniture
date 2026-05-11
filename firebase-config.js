@@ -15,9 +15,20 @@ let app, auth, database, storage;
 
 try {
     app = firebase.initializeApp(firebaseConfig);
-    auth = firebase.auth();
+    
+    // Only initialize auth if firebase.auth is available
+    if (typeof firebase.auth === 'function') {
+        auth = firebase.auth();
+    }
+    
+    // Always initialize database
     database = firebase.database();
-    storage = firebase.storage();
+    
+    // Only initialize storage if firebase.storage is available
+    if (typeof firebase.storage === 'function') {
+        storage = firebase.storage();
+    }
+    
     console.log('Firebase initialized successfully');
 } catch (error) {
     console.error('Firebase initialization error:', error);
