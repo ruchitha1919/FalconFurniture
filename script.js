@@ -126,24 +126,40 @@ function toggleWishlist(event, productId) {
     if (existingIndex > -1) {
         // Remove from wishlist
         wishlist.splice(existingIndex, 1);
+        
+        // Save to localStorage
+        localStorage.setItem('falconWishlist', JSON.stringify(wishlist));
+        
+        // Update wishlist badge
+        updateWishlistBadge();
+        
+        // Re-render products to update wishlist icons
+        renderProducts();
     } else {
-        // Add to wishlist
+        // Add to wishlist temporarily
         wishlist.push({
             id: product.id,
             name: product.name,
             price: product.price,
             image: product.image
         });
+        
+        // Save to localStorage
+        localStorage.setItem('falconWishlist', JSON.stringify(wishlist));
+        
+        // Update wishlist badge
+        updateWishlistBadge();
+        
+        // Show wishlist form modal to collect user details
+        const wishlistModal = document.getElementById('wishlistModal');
+        if (wishlistModal) {
+            wishlistModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Re-render products to update wishlist icons
+        renderProducts();
     }
-    
-    // Save to localStorage
-    localStorage.setItem('falconWishlist', JSON.stringify(wishlist));
-    
-    // Update wishlist badge
-    updateWishlistBadge();
-    
-    // Re-render products to update wishlist icons
-    renderProducts();
 }
 
 // Update wishlist badge
@@ -455,15 +471,17 @@ if (wishlistForm) {
                 
                 console.log('Wishlist saved to Firebase successfully');
                 
-                // Show success message
-                alert('Thank you! Your wishlist has been saved successfully. We will contact you soon!');
+                // Show success message with product count
+                const itemCount = wishlist.length;
+                alert(`Thank you, ${name}! Your wishlist with ${itemCount} item(s) has been saved successfully. We will contact you soon at ${email}!`);
             } catch (error) {
                 console.error('Error saving wishlist to Firebase:', error);
-                alert('Thank you! Your wishlist has been created locally.');
+                alert(`Thank you, ${name}! Your wishlist has been created locally.`);
             }
         } else {
             console.log('Firebase not available, wishlist saved locally');
-            alert('Thank you! Your wishlist has been created successfully.');
+            const itemCount = wishlist.length;
+            alert(`Thank you, ${name}! Your wishlist with ${itemCount} item(s) has been created successfully.`);
         }
         
         // Reset form and close modal
