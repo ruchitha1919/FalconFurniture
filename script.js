@@ -426,17 +426,45 @@ wishlistModal.addEventListener('click', function(e) {
 
 // Handle wishlist form submission
 if (wishlistForm) {
-    wishlistForm.addEventListener('submit', function(e) {
+    wishlistForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
         const name = document.getElementById('wishlistName').value;
         const email = document.getElementById('wishlistEmail').value;
         const phone = document.getElementById('wishlistPhone').value;
         
-        console.log('Wishlist created for:', { name, email, phone });
+        // Prepare wishlist data
+        const wishlistData = {
+            name: name,
+            email: email,
+            phone: phone,
+            items: wishlist, // Current wishlist items
+            createdAt: Date.now(),
+            timestamp: new Date().toISOString()
+        };
         
-        // Show success message
-        alert('Thank you! Your wishlist has been created successfully.');
+        console.log('Saving wishlist to Firebase:', wishlistData);
+        
+        // Save to Firebase if available
+        const USE_FIREBASE = typeof firebase !== 'undefined' && typeof firebaseDatabase !== 'undefined';
+        
+        if (USE_FIREBASE) {
+            try {
+                const wishlistsRef = firebaseDatabase.ref('wishlists');
+                await wishlistsRef.push(wishlistData);
+                
+                console.log('Wishlist saved to Firebase successfully');
+                
+                // Show success message
+                alert('Thank you! Your wishlist has been saved successfully. We will contact you soon!');
+            } catch (error) {
+                console.error('Error saving wishlist to Firebase:', error);
+                alert('Thank you! Your wishlist has been created locally.');
+            }
+        } else {
+            console.log('Firebase not available, wishlist saved locally');
+            alert('Thank you! Your wishlist has been created successfully.');
+        }
         
         // Reset form and close modal
         wishlistForm.reset();

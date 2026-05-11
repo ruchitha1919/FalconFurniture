@@ -104,6 +104,9 @@ if (document.getElementById('adminDashboard')) {
     // Firebase Database References
     const productsRef = USE_FIREBASE ? firebaseDatabase.ref('products') : null;
     const bannersRef = USE_FIREBASE ? firebaseDatabase.ref('banners') : null;
+    const wishlistsRef = USE_FIREBASE ? firebaseDatabase.ref('wishlists') : null;
+
+    let wishlists = [];
 
     // Load data from Firebase or localStorage
     function loadData() {
@@ -130,12 +133,24 @@ if (document.getElementById('adminDashboard')) {
                 });
                 renderBanners();
             });
+
+            wishlistsRef.on('value', (snapshot) => {
+                wishlists = [];
+                snapshot.forEach((childSnapshot) => {
+                    wishlists.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                renderWishlists();
+            });
         } else {
             // Load from localStorage
             products = JSON.parse(localStorage.getItem('falconProducts')) || [];
             banners = JSON.parse(localStorage.getItem('falconBanners')) || [];
             renderProducts();
             renderBanners();
+            renderWishlists();
         }
     }
 
@@ -453,6 +468,64 @@ if (document.getElementById('adminDashboard')) {
             } catch (error) {
                 console.error('Error deleting banner:', error);
                 alert('Error deleting banner. Please try again.');
+            }
+        }
+    };
+
+    // Wishlists Management
+    function renderWishlists() {
+        const tbody = document.getElementById('wishlistsTableBody');
+        if (!tbody) return;
+
+        if (wishlists.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
+                        No wishlists submitted yet
+                    </td>
+                </tr>
+            `;
+        } else {
+            tbody.innerHTML = wishlists.map(wishlist => {
+                const date = new Date(wishlist.createdAt).toLocaleDateString();
+                const itemCount = wishlist.items ? wishlist.items.length : 0;
+                const itemNames = wishlist.items ? wishlist.items.map(item => item.name).join(', ') : 'No items';
+                
+                return `
+                    <tr>
+                        <td>${wishlist.name}</td>
+                        <td>${wishlist.email}</td>
+                        <td>${wishlist.phone}</td>
+                        <td>
+                            <span style="color: #8B5E3C; font-weight: 600;">${itemCount} items</span>
+                            <br>
+                            <small style="color: #999;">${itemNames}</small>
+                        </td>
+                        <td>${date}</td>
+                        <td>
+                            <button class="btn-delete" onclick="deleteWishlist('${wishlist.id}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    }
+
+    window.deleteWishlist = async function(id) {
+        if (confirm('Are you sure you want to delete this wishlist?')) {
+            try {
+                if (USE_FIREBASE) {
+                    await wishlistsRef.child(id).remove();
+                } else {
+                    wishlists = wishlists.filter(w => w.id != id);
+                    renderWishlists();
+                }
+                alert('Wishlist deleted successfully!');
+            } catch (error) {
+                console.error('Error deleting wishlist:', error);
+                alert('Error deleting wishlist. Please try again.');
             }
         }
     };

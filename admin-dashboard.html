@@ -41,6 +41,10 @@
                     <i class="fas fa-shopping-cart"></i>
                     <span>Orders</span>
                 </a>
+                <a class="menu-item" data-section="wishlistsSection">
+                    <i class="fas fa-heart"></i>
+                    <span>Wishlists</span>
+                </a>
                 <a class="menu-item" data-section="customersSection">
                     <i class="fas fa-users"></i>
                     <span>Customers</span>
@@ -264,6 +268,34 @@
                 <div style="text-align: center; padding: 60px; color: #999;">
                     <i class="fas fa-shopping-cart" style="font-size: 64px; margin-bottom: 20px; opacity: 0.3;"></i>
                     <p>No orders yet</p>
+                </div>
+            </section>
+
+            <!-- Wishlists Section -->
+            <section class="content-section" id="wishlistsSection">
+                <div class="section-header">
+                    <h2>Customer Wishlists</h2>
+                </div>
+                <div style="margin-top: 20px;">
+                    <table class="products-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Items</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="wishlistsTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
+                                    No wishlists submitted yet
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
 
