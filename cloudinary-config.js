@@ -1,7 +1,7 @@
 // Cloudinary Configuration
 const CLOUDINARY_CONFIG = {
-    cloudName: 'YOUR_CLOUD_NAME',  // Replace with your Cloudinary cloud name
-    uploadPreset: 'YOUR_UPLOAD_PRESET',  // Replace with your unsigned upload preset
+    cloudName: 'drykxz5sw',
+    uploadPreset: 'falcon_furniture_unsigned',
     apiKey: 'oqFcLeSBtVSTE81JOFXT4mfBMyg'
 };
 
