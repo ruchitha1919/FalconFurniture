@@ -1,193 +1,299 @@
-// Login Form
-const loginForm = document.getElementById('loginForm');
-if (loginForm) {
+// Admin credentials (in production, this should be server-side)
+const ADMIN_CREDENTIALS = {
+    email: 'admin@falconfurniture.com',
+    password: 'admin123'
+};
+
+// Check if on login page
+if (document.getElementById('loginForm')) {
+    const loginForm = document.getElementById('loginForm');
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+
+    // Toggle password visibility
+    if (togglePassword) {
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.type === 'password' ? 'text' : 'password';
+            passwordInput.type = type;
+            const icon = this.querySelector('i');
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+        });
+    }
+
+    // Handle login
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        const email = document.getElementById('email').value;
+        const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
-        
-        // Simple validation (replace with actual authentication)
-        if (email === 'admin@falconfurniture.com' && password === 'admin123') {
+
+        // Show error if fields are empty
+        if (!email || !password) {
+            showError('Please fill in all fields');
+            return;
+        }
+
+        // Validate credentials
+        if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
+            // Set admin session
+            localStorage.setItem('adminLoggedIn', 'true');
+            localStorage.setItem('adminEmail', email);
+            
+            // Redirect to dashboard
             window.location.href = 'admin-dashboard.html';
         } else {
-            alert('Invalid credentials! Use:\nEmail: admin@falconfurniture.com\nPassword: admin123');
+            showError('Invalid email or password');
         }
     });
-    
-    // Toggle Password Visibility
-    const togglePassword = document.getElementById('togglePassword');
-    const passwordInput = document.getElementById('password');
-    
-    togglePassword.addEventListener('click', function() {
-        const type = passwordInput.type === 'password' ? 'text' : 'password';
-        passwordInput.type = type;
+
+    function showError(message) {
+        let errorDiv = document.querySelector('.error-message');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            loginForm.insertBefore(errorDiv, loginForm.firstChild);
+        }
+        errorDiv.textContent = message;
+        errorDiv.classList.add('show');
         
-        const icon = this.querySelector('i');
-        if (type === 'password') {
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        } else {
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
+        setTimeout(() => {
+            errorDiv.classList.remove('show');
+        }, 3000);
+    }
+}
+
+// Check if on dashboard page
+if (document.getElementById('adminDashboard')) {
+    // Check authentication
+    if (localStorage.getItem('adminLoggedIn') !== 'true') {
+        window.location.href = 'admin-login.html';
+    }
+
+    // Initialize dashboard
+    const adminEmail = localStorage.getItem('adminEmail');
+    document.getElementById('adminEmail').textContent = adminEmail;
+    document.getElementById('adminInitial').textContent = adminEmail.charAt(0).toUpperCase();
+
+    // Load products from localStorage
+    let products = JSON.parse(localStorage.getItem('falconProducts')) || [];
+    let banners = JSON.parse(localStorage.getItem('falconBanners')) || [];
+
+    // Menu navigation
+    const menuItems = document.querySelectorAll('.menu-item');
+    const contentSections = document.querySelectorAll('.content-section');
+
+    menuItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const target = this.dataset.section;
+            
+            // Update active menu
+            menuItems.forEach(m => m.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Show target section
+            contentSections.forEach(s => s.classList.remove('active'));
+            document.getElementById(target).classList.add('active');
+        });
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        if (confirm('Are you sure you want to logout?')) {
+            localStorage.removeItem('adminLoggedIn');
+            localStorage.removeItem('adminEmail');
+            window.location.href = 'admin-login.html';
         }
     });
-}
 
-// Sidebar Navigation
-const navItems = document.querySelectorAll('.nav-item');
-const sections = document.querySelectorAll('.admin-section');
+    // Product Management
+    const productForm = document.getElementById('productForm');
+    const imageInput = document.getElementById('productImage');
+    const imagePreview = document.getElementById('imagePreview');
+    const imageUploadArea = document.querySelector('.image-upload');
 
-navItems.forEach(item => {
-    item.addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        // Remove active class from all items
-        navItems.forEach(nav => nav.classList.remove('active'));
-        
-        // Add active class to clicked item
-        this.classList.add('active');
-        
-        // Hide all sections
-        sections.forEach(section => section.classList.remove('active'));
-        
-        // Show selected section
-        const sectionId = this.getAttribute('data-section');
-        document.getElementById(sectionId).classList.add('active');
+    // Image upload preview
+    imageUploadArea.addEventListener('click', () => imageInput.click());
+    
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreview.classList.add('show');
+            };
+            reader.readAsDataURL(file);
+        }
     });
-});
 
-// Mobile Menu Toggle
-const menuToggle = document.getElementById('menuToggle');
-const sidebar = document.querySelector('.admin-sidebar');
-
-if (menuToggle) {
-    menuToggle.addEventListener('click', function() {
-        sidebar.classList.toggle('active');
-    });
-}
-
-// Modal Functions
-function openModal(modalId) {
-    const modal = document.getElementById(modalId);
-    modal.classList.add('active');
-}
-
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    modal.classList.remove('active');
-}
-
-// Product Modal
-const addProductBtn = document.getElementById('addProductBtn');
-if (addProductBtn) {
-    addProductBtn.addEventListener('click', function() {
-        document.getElementById('productModalTitle').textContent = 'Add Product';
-        document.getElementById('productForm').reset();
-        openModal('productModal');
-    });
-}
-
-const productForm = document.getElementById('productForm');
-if (productForm) {
+    // Add/Edit Product
     productForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        console.log('Product saved');
-        closeModal('productModal');
+        
+        const productId = document.getElementById('productId').value;
+        const product = {
+            id: productId || Date.now(),
+            name: document.getElementById('productName').value,
+            price: document.getElementById('productPrice').value,
+            category: document.getElementById('productCategory').value,
+            description: document.getElementById('productDescription').value,
+            stock: document.getElementById('productStock').value,
+            image: imagePreview.src || 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop'
+        };
+
+        if (productId) {
+            // Update existing product
+            const index = products.findIndex(p => p.id == productId);
+            products[index] = product;
+        } else {
+            // Add new product
+            products.push(product);
+        }
+
+        // Save to localStorage
+        localStorage.setItem('falconProducts', JSON.stringify(products));
+        
+        // Reset form
+        productForm.reset();
+        imagePreview.classList.remove('show');
+        document.getElementById('productId').value = '';
+        
+        // Refresh product list
+        renderProducts();
+        
         alert('Product saved successfully!');
     });
-}
 
-// Category Modal
-const addCategoryBtn = document.getElementById('addCategoryBtn');
-if (addCategoryBtn) {
-    addCategoryBtn.addEventListener('click', function() {
-        document.getElementById('categoryModalTitle').textContent = 'Add Category';
-        document.getElementById('categoryForm').reset();
-        openModal('categoryModal');
-    });
-}
-
-const categoryForm = document.getElementById('categoryForm');
-if (categoryForm) {
-    categoryForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        console.log('Category saved');
-        closeModal('categoryModal');
-        alert('Category saved successfully!');
-    });
-}
-
-// Banner Modal
-const addBannerBtn = document.getElementById('addBannerBtn');
-if (addBannerBtn) {
-    addBannerBtn.addEventListener('click', function() {
-        document.getElementById('bannerModalTitle').textContent = 'Add Banner';
-        document.getElementById('bannerForm').reset();
-        openModal('bannerModal');
-    });
-}
-
-const bannerForm = document.getElementById('bannerForm');
-if (bannerForm) {
-    bannerForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        console.log('Banner saved');
-        closeModal('bannerModal');
-        alert('Banner saved successfully!');
-    });
-}
-
-// Edit Product
-function editProduct(id) {
-    document.getElementById('productModalTitle').textContent = 'Edit Product';
-    // Load product data here
-    openModal('productModal');
-}
-
-// Delete Product
-function deleteProduct(id) {
-    if (confirm('Are you sure you want to delete this product?')) {
-        console.log('Product deleted:', id);
-        alert('Product deleted successfully!');
+    // Render products table
+    function renderProducts() {
+        const tbody = document.getElementById('productsTableBody');
+        tbody.innerHTML = products.map(product => `
+            <tr>
+                <td><img src="${product.image}" alt="${product.name}"></td>
+                <td>${product.name}</td>
+                <td>₹${product.price}</td>
+                <td>${product.category}</td>
+                <td>${product.stock}</td>
+                <td>
+                    <div class="action-btns">
+                        <button class="btn-edit" onclick="editProduct(${product.id})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn-delete" onclick="deleteProduct(${product.id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+        
+        // Update stats
+        updateStats();
     }
-}
 
-// Edit Category
-function editCategory(id) {
-    document.getElementById('categoryModalTitle').textContent = 'Edit Category';
-    // Load category data here
-    openModal('categoryModal');
-}
+    // Edit product
+    window.editProduct = function(id) {
+        const product = products.find(p => p.id == id);
+        if (product) {
+            document.getElementById('productId').value = product.id;
+            document.getElementById('productName').value = product.name;
+            document.getElementById('productPrice').value = product.price;
+            document.getElementById('productCategory').value = product.category;
+            document.getElementById('productDescription').value = product.description;
+            document.getElementById('productStock').value = product.stock;
+            imagePreview.src = product.image;
+            imagePreview.classList.add('show');
+            
+            // Scroll to form
+            productForm.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
 
-// Delete Category
-function deleteCategory(id) {
-    if (confirm('Are you sure you want to delete this category?')) {
-        console.log('Category deleted:', id);
-        alert('Category deleted successfully!');
+    // Delete product
+    window.deleteProduct = function(id) {
+        if (confirm('Are you sure you want to delete this product?')) {
+            products = products.filter(p => p.id != id);
+            localStorage.setItem('falconProducts', JSON.stringify(products));
+            renderProducts();
+            alert('Product deleted successfully!');
+        }
+    };
+
+    // Update dashboard stats
+    function updateStats() {
+        document.getElementById('totalProducts').textContent = products.length;
+        document.getElementById('totalOrders').textContent = '0';
+        document.getElementById('totalRevenue').textContent = '₹0';
+        document.getElementById('totalCustomers').textContent = '0';
     }
-}
 
-// Edit Banner
-function editBanner(id) {
-    document.getElementById('bannerModalTitle').textContent = 'Edit Banner';
-    // Load banner data here
-    openModal('bannerModal');
-}
+    // Banner Management
+    const bannerForm = document.getElementById('bannerForm');
+    const bannerImageInput = document.getElementById('bannerImage');
+    const bannerImagePreview = document.getElementById('bannerImagePreview');
+    const bannerUploadArea = document.querySelector('#bannersSection .image-upload');
 
-// Delete Banner
-function deleteBanner(id) {
-    if (confirm('Are you sure you want to delete this banner?')) {
-        console.log('Banner deleted:', id);
-        alert('Banner deleted successfully!');
-    }
-}
-
-// Close modal on overlay click
-document.querySelectorAll('.modal').forEach(modal => {
-    modal.addEventListener('click', function(e) {
-        if (e.target === this) {
-            this.classList.remove('active');
+    bannerUploadArea.addEventListener('click', () => bannerImageInput.click());
+    
+    bannerImageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                bannerImagePreview.src = e.target.result;
+                bannerImagePreview.classList.add('show');
+            };
+            reader.readAsDataURL(file);
         }
     });
-});
+
+    bannerForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const banner = {
+            id: Date.now(),
+            title: document.getElementById('bannerTitle').value,
+            subtitle: document.getElementById('bannerSubtitle').value,
+            image: bannerImagePreview.src || 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1600&h=800&fit=crop'
+        };
+
+        banners.push(banner);
+        localStorage.setItem('falconBanners', JSON.stringify(banners));
+        
+        bannerForm.reset();
+        bannerImagePreview.classList.remove('show');
+        
+        renderBanners();
+        alert('Banner added successfully!');
+    });
+
+    function renderBanners() {
+        const tbody = document.getElementById('bannersTableBody');
+        tbody.innerHTML = banners.map(banner => `
+            <tr>
+                <td><img src="${banner.image}" alt="${banner.title}" style="width: 100px; height: 60px; object-fit: cover;"></td>
+                <td>${banner.title}</td>
+                <td>${banner.subtitle}</td>
+                <td>
+                    <button class="btn-delete" onclick="deleteBanner(${banner.id})">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    window.deleteBanner = function(id) {
+        if (confirm('Are you sure you want to delete this banner?')) {
+            banners = banners.filter(b => b.id != id);
+            localStorage.setItem('falconBanners', JSON.stringify(banners));
+            renderBanners();
+            alert('Banner deleted successfully!');
+        }
+    };
+
+    // Initial render
+    renderProducts();
+    renderBanners();
+}
