@@ -1,4 +1,7 @@
-// Admin credentials (in production, this should be server-side)
+// Firebase or localStorage fallback
+const USE_FIREBASE = typeof firebase !== 'undefined';
+
+// Admin credentials for email/password login
 const ADMIN_CREDENTIALS = {
     email: 'admin@falconfurniture.com',
     password: 'admin123'
@@ -28,22 +31,33 @@ if (document.getElementById('loginForm')) {
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
 
-        // Show error if fields are empty
         if (!email || !password) {
             showError('Please fill in all fields');
             return;
         }
 
-        // Validate credentials
-        if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
-            // Set admin session
-            localStorage.setItem('adminLoggedIn', 'true');
-            localStorage.setItem('adminEmail', email);
-            
-            // Redirect to dashboard
-            window.location.href = 'admin-dashboard.html';
+        if (USE_FIREBASE) {
+            // Firebase Authentication
+            firebaseAuth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    localStorage.setItem('adminLoggedIn', 'true');
+                    localStorage.setItem('adminEmail', email);
+                    localStorage.setItem('adminUid', userCredential.user.uid);
+                    window.location.href = 'admin-dashboard.html';
+                })
+                .catch((error) => {
+                    showError('Invalid email or password');
+                    console.error('Firebase login error:', error);
+                });
         } else {
-            showError('Invalid email or password');
+            // Fallback to local authentication
+            if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
+                localStorage.setItem('adminLoggedIn', 'true');
+                localStorage.setItem('adminEmail', email);
+                window.location.href = 'admin-dashboard.html';
+            } else {
+                showError('Invalid email or password');
+            }
         }
     });
 
@@ -70,14 +84,50 @@ if (document.getElementById('adminDashboard')) {
         window.location.href = 'admin-login.html';
     }
 
-    // Initialize dashboard
     const adminEmail = localStorage.getItem('adminEmail');
     document.getElementById('adminEmail').textContent = adminEmail;
     document.getElementById('adminInitial').textContent = adminEmail.charAt(0).toUpperCase();
 
-    // Load products from localStorage
-    let products = JSON.parse(localStorage.getItem('falconProducts')) || [];
-    let banners = JSON.parse(localStorage.getItem('falconBanners')) || [];
+    let products = [];
+    let banners = [];
+
+    // Firebase Database References
+    const productsRef = USE_FIREBASE ? firebaseDatabase.ref('products') : null;
+    const bannersRef = USE_FIREBASE ? firebaseDatabase.ref('banners') : null;
+
+    // Load data from Firebase or localStorage
+    function loadData() {
+        if (USE_FIREBASE) {
+            // Load from Firebase
+            productsRef.on('value', (snapshot) => {
+                products = [];
+                snapshot.forEach((childSnapshot) => {
+                    products.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                renderProducts();
+            });
+
+            bannersRef.on('value', (snapshot) => {
+                banners = [];
+                snapshot.forEach((childSnapshot) => {
+                    banners.push({
+                        id: childSnapshot.key,
+                        ...childSnapshot.val()
+                    });
+                });
+                renderBanners();
+            });
+        } else {
+            // Load from localStorage
+            products = JSON.parse(localStorage.getItem('falconProducts')) || [];
+            banners = JSON.parse(localStorage.getItem('falconBanners')) || [];
+            renderProducts();
+            renderBanners();
+        }
+    }
 
     // Menu navigation
     const menuItems = document.querySelectorAll('.menu-item');
@@ -86,12 +136,8 @@ if (document.getElementById('adminDashboard')) {
     menuItems.forEach(item => {
         item.addEventListener('click', function() {
             const target = this.dataset.section;
-            
-            // Update active menu
             menuItems.forEach(m => m.classList.remove('active'));
             this.classList.add('active');
-            
-            // Show target section
             contentSections.forEach(s => s.classList.remove('active'));
             document.getElementById(target).classList.add('active');
         });
@@ -100,8 +146,12 @@ if (document.getElementById('adminDashboard')) {
     // Logout
     document.getElementById('logoutBtn').addEventListener('click', function() {
         if (confirm('Are you sure you want to logout?')) {
+            if (USE_FIREBASE) {
+                firebaseAuth.signOut();
+            }
             localStorage.removeItem('adminLoggedIn');
             localStorage.removeItem('adminEmail');
+            localStorage.removeItem('adminUid');
             window.location.href = 'admin-login.html';
         }
     });
@@ -112,7 +162,6 @@ if (document.getElementById('adminDashboard')) {
     const imagePreview = document.getElementById('imagePreview');
     const imageUploadArea = document.querySelector('.image-upload');
 
-    // Image upload preview
     imageUploadArea.addEventListener('click', () => imageInput.click());
     
     imageInput.addEventListener('change', function(e) {
@@ -128,67 +177,110 @@ if (document.getElementById('adminDashboard')) {
     });
 
     // Add/Edit Product
-    productForm.addEventListener('submit', function(e) {
+    productForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
         const productId = document.getElementById('productId').value;
-        const product = {
-            id: productId || Date.now(),
+        const productData = {
             name: document.getElementById('productName').value,
             price: document.getElementById('productPrice').value,
             category: document.getElementById('productCategory').value,
             description: document.getElementById('productDescription').value,
             stock: document.getElementById('productStock').value,
-            image: imagePreview.src || 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop'
+            image: imagePreview.src || 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop',
+            createdAt: Date.now()
         };
 
-        if (productId) {
-            // Update existing product
-            const index = products.findIndex(p => p.id == productId);
-            products[index] = product;
-        } else {
-            // Add new product
-            products.push(product);
-        }
+        try {
+            // Upload to Cloudinary if new image file selected
+            if (imageInput.files[0]) {
+                const file = imageInput.files[0];
+                
+                // Show uploading message
+                const submitBtn = productForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Uploading image...';
+                submitBtn.disabled = true;
 
-        // Save to localStorage
-        localStorage.setItem('falconProducts', JSON.stringify(products));
-        
-        // Reset form
-        productForm.reset();
-        imagePreview.classList.remove('show');
-        document.getElementById('productId').value = '';
-        
-        // Refresh product list
-        renderProducts();
-        
-        alert('Product saved successfully!');
+                try {
+                    // Upload to Cloudinary
+                    const cloudinaryUrl = await uploadToCloudinary(file, 'products');
+                    productData.image = cloudinaryUrl;
+                    
+                    submitBtn.textContent = 'Saving product...';
+                } catch (uploadError) {
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                    alert('Failed to upload image. Please try again.');
+                    console.error('Image upload error:', uploadError);
+                    return;
+                }
+                
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+
+            if (USE_FIREBASE) {
+                // Save to Firebase Database
+                if (productId) {
+                    await productsRef.child(productId).update(productData);
+                } else {
+                    await productsRef.push(productData);
+                }
+            } else {
+                // Save to localStorage
+                if (productId) {
+                    const index = products.findIndex(p => p.id == productId);
+                    products[index] = { id: productId, ...productData };
+                } else {
+                    products.push({ id: Date.now().toString(), ...productData });
+                }
+                localStorage.setItem('falconProducts', JSON.stringify(products));
+                renderProducts();
+            }
+
+            productForm.reset();
+            imagePreview.classList.remove('show');
+            document.getElementById('productId').value = '';
+            alert('Product saved successfully!');
+        } catch (error) {
+            console.error('Error saving product:', error);
+            alert('Error saving product. Please try again.');
+        }
     });
 
     // Render products table
     function renderProducts() {
         const tbody = document.getElementById('productsTableBody');
-        tbody.innerHTML = products.map(product => `
-            <tr>
-                <td><img src="${product.image}" alt="${product.name}"></td>
-                <td>${product.name}</td>
-                <td>₹${product.price}</td>
-                <td>${product.category}</td>
-                <td>${product.stock}</td>
-                <td>
-                    <div class="action-btns">
-                        <button class="btn-edit" onclick="editProduct(${product.id})">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="btn-delete" onclick="deleteProduct(${product.id})">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        `).join('');
-        
-        // Update stats
+        if (products.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
+                        No products added yet
+                    </td>
+                </tr>
+            `;
+        } else {
+            tbody.innerHTML = products.map(product => `
+                <tr>
+                    <td><img src="${product.image}" alt="${product.name}"></td>
+                    <td>${product.name}</td>
+                    <td>₹${product.price}</td>
+                    <td>${product.category}</td>
+                    <td>${product.stock}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="btn-edit" onclick="editProduct('${product.id}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn-delete" onclick="deleteProduct('${product.id}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
         updateStats();
     }
 
@@ -204,19 +296,26 @@ if (document.getElementById('adminDashboard')) {
             document.getElementById('productStock').value = product.stock;
             imagePreview.src = product.image;
             imagePreview.classList.add('show');
-            
-            // Scroll to form
             productForm.scrollIntoView({ behavior: 'smooth' });
         }
     };
 
     // Delete product
-    window.deleteProduct = function(id) {
+    window.deleteProduct = async function(id) {
         if (confirm('Are you sure you want to delete this product?')) {
-            products = products.filter(p => p.id != id);
-            localStorage.setItem('falconProducts', JSON.stringify(products));
-            renderProducts();
-            alert('Product deleted successfully!');
+            try {
+                if (USE_FIREBASE) {
+                    await productsRef.child(id).remove();
+                } else {
+                    products = products.filter(p => p.id != id);
+                    localStorage.setItem('falconProducts', JSON.stringify(products));
+                    renderProducts();
+                }
+                alert('Product deleted successfully!');
+            } catch (error) {
+                console.error('Error deleting product:', error);
+                alert('Error deleting product. Please try again.');
+            }
         }
     };
 
@@ -248,52 +347,106 @@ if (document.getElementById('adminDashboard')) {
         }
     });
 
-    bannerForm.addEventListener('submit', function(e) {
+    bannerForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        const banner = {
-            id: Date.now(),
+        const bannerData = {
             title: document.getElementById('bannerTitle').value,
             subtitle: document.getElementById('bannerSubtitle').value,
-            image: bannerImagePreview.src || 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1600&h=800&fit=crop'
+            image: bannerImagePreview.src || 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1600&h=800&fit=crop',
+            createdAt: Date.now()
         };
 
-        banners.push(banner);
-        localStorage.setItem('falconBanners', JSON.stringify(banners));
-        
-        bannerForm.reset();
-        bannerImagePreview.classList.remove('show');
-        
-        renderBanners();
-        alert('Banner added successfully!');
+        try {
+            // Upload to Cloudinary if new image file selected
+            if (bannerImageInput.files[0]) {
+                const file = bannerImageInput.files[0];
+                
+                // Show uploading message
+                const submitBtn = bannerForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Uploading image...';
+                submitBtn.disabled = true;
+
+                try {
+                    // Upload to Cloudinary
+                    const cloudinaryUrl = await uploadToCloudinary(file, 'banners');
+                    bannerData.image = cloudinaryUrl;
+                    
+                    submitBtn.textContent = 'Saving banner...';
+                } catch (uploadError) {
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                    alert('Failed to upload image. Please try again.');
+                    console.error('Image upload error:', uploadError);
+                    return;
+                }
+                
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+
+            if (USE_FIREBASE) {
+                await bannersRef.push(bannerData);
+            } else {
+                banners.push({ id: Date.now().toString(), ...bannerData });
+                localStorage.setItem('falconBanners', JSON.stringify(banners));
+                renderBanners();
+            }
+
+            bannerForm.reset();
+            bannerImagePreview.classList.remove('show');
+            alert('Banner added successfully!');
+        } catch (error) {
+            console.error('Error saving banner:', error);
+            alert('Error saving banner. Please try again.');
+        }
     });
 
     function renderBanners() {
         const tbody = document.getElementById('bannersTableBody');
-        tbody.innerHTML = banners.map(banner => `
-            <tr>
-                <td><img src="${banner.image}" alt="${banner.title}" style="width: 100px; height: 60px; object-fit: cover;"></td>
-                <td>${banner.title}</td>
-                <td>${banner.subtitle}</td>
-                <td>
-                    <button class="btn-delete" onclick="deleteBanner(${banner.id})">
-                        <i class="fas fa-trash"></i> Delete
-                    </button>
-                </td>
-            </tr>
-        `).join('');
+        if (banners.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 40px; color: #999;">
+                        No banners added yet
+                    </td>
+                </tr>
+            `;
+        } else {
+            tbody.innerHTML = banners.map(banner => `
+                <tr>
+                    <td><img src="${banner.image}" alt="${banner.title}" style="width: 100px; height: 60px; object-fit: cover;"></td>
+                    <td>${banner.title}</td>
+                    <td>${banner.subtitle}</td>
+                    <td>
+                        <button class="btn-delete" onclick="deleteBanner('${banner.id}')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
     }
 
-    window.deleteBanner = function(id) {
+    window.deleteBanner = async function(id) {
         if (confirm('Are you sure you want to delete this banner?')) {
-            banners = banners.filter(b => b.id != id);
-            localStorage.setItem('falconBanners', JSON.stringify(banners));
-            renderBanners();
-            alert('Banner deleted successfully!');
+            try {
+                if (USE_FIREBASE) {
+                    await bannersRef.child(id).remove();
+                } else {
+                    banners = banners.filter(b => b.id != id);
+                    localStorage.setItem('falconBanners', JSON.stringify(banners));
+                    renderBanners();
+                }
+                alert('Banner deleted successfully!');
+            } catch (error) {
+                console.error('Error deleting banner:', error);
+                alert('Error deleting banner. Please try again.');
+            }
         }
     };
 
-    // Initial render
-    renderProducts();
-    renderBanners();
+    // Initial load
+    loadData();
 }
