@@ -1,13 +1,13 @@
 // Firebase Configuration
 const firebaseConfig = {
-    apiKey: "AIza5yAamBtZbo3mpZsCokgRmwqpx4wMqi5DZW8",
+    apiKey: "AIzaSyAamBkZbo3mpZsCohg0mxqpx4wWqi5O2Wg",
     authDomain: "falcon-furniture.firebaseapp.com",
     projectId: "falcon-furniture",
     storageBucket: "falcon-furniture.firebasestorage.app",
-    messagingSenderId: "461692281804",
-    appId: "1:461692281804:web:515Cde2a35m9278efDd8d",
+    messagingSenderId: "461692201804",
+    appId: "1:461692201804:web:515cde2a35d99270efbde9",
     databaseURL: "https://falcon-furniture-default-rtdb.firebaseio.com",
-    measurementId: "G-QRRMRFM4G0"
+    measurementId: "G-6R0HRFM66Q"
 };
 
 // Initialize Firebase
