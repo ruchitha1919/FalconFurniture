@@ -6,13 +6,23 @@ let wishlist = JSON.parse(localStorage.getItem('falconWishlist')) || [];
 const USE_FIREBASE = typeof firebase !== 'undefined';
 let products = [];
 
+console.log('Script.js loaded');
+console.log('Firebase available:', USE_FIREBASE);
+console.log('Firebase Database:', typeof firebaseDatabase !== 'undefined' ? 'Available' : 'Not available');
+
 // Load products from Firebase or use default products
 function loadProducts() {
     const productGrid = document.getElementById('productGrid');
     
-    if (!productGrid) return;
+    if (!productGrid) {
+        console.log('Product grid not found');
+        return;
+    }
 
-    if (USE_FIREBASE && firebaseDatabase) {
+    console.log('Loading products...');
+
+    if (USE_FIREBASE && typeof firebaseDatabase !== 'undefined') {
+        console.log('Loading from Firebase...');
         // Load from Firebase
         const productsRef = firebaseDatabase.ref('products');
         productsRef.on('value', (snapshot) => {
@@ -23,9 +33,22 @@ function loadProducts() {
                     ...childSnapshot.val()
                 });
             });
+            console.log('Firebase products loaded:', products.length);
+            console.log('Products:', products);
+            
+            // If no Firebase products, use defaults
+            if (products.length === 0) {
+                console.log('No Firebase products, using defaults');
+                products = getDefaultProducts();
+            }
+            renderProducts();
+        }, (error) => {
+            console.error('Firebase error:', error);
+            products = getDefaultProducts();
             renderProducts();
         });
     } else {
+        console.log('Firebase not available, using default products');
         // Use default products if Firebase not available
         products = getDefaultProducts();
         renderProducts();
@@ -36,6 +59,8 @@ function loadProducts() {
 function renderProducts() {
     const productGrid = document.getElementById('productGrid');
     if (!productGrid) return;
+
+    console.log('Rendering products:', products.length);
 
     if (products.length === 0) {
         productGrid.innerHTML = `
