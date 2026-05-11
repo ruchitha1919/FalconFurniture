@@ -1,6 +1,13 @@
 // Firebase or localStorage fallback
 const USE_FIREBASE = typeof firebase !== 'undefined';
 
+// Log Firebase status
+console.log('Firebase available:', USE_FIREBASE);
+if (USE_FIREBASE) {
+    console.log('Firebase Auth:', typeof firebaseAuth !== 'undefined');
+    console.log('Firebase Database:', typeof firebaseDatabase !== 'undefined');
+}
+
 // Admin credentials for email/password login
 const ADMIN_CREDENTIALS = {
     email: 'admin@falconfurniture.com',
@@ -38,18 +45,21 @@ if (document.getElementById('loginForm')) {
 
         if (USE_FIREBASE) {
             // Firebase Authentication
+            console.log('Attempting Firebase login...');
             firebaseAuth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
+                    console.log('Firebase login successful:', userCredential.user.email);
                     localStorage.setItem('adminLoggedIn', 'true');
                     localStorage.setItem('adminEmail', email);
                     localStorage.setItem('adminUid', userCredential.user.uid);
                     window.location.href = 'admin-dashboard.html';
                 })
                 .catch((error) => {
+                    console.error('Firebase login error:', error.code, error.message);
                     showError('Invalid email or password');
-                    console.error('Firebase login error:', error);
                 });
         } else {
+            console.log('Firebase not available, using local authentication');
             // Fallback to local authentication
             if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
                 localStorage.setItem('adminLoggedIn', 'true');
