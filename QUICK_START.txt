@@ -1,0 +1,121 @@
+═══════════════════════════════════════════════════════════════
+  FALCON FURNITURE - QUICK START GUIDE
+═══════════════════════════════════════════════════════════════
+
+📋 CURRENT STATUS
+─────────────────────────────────────────────────────────────
+✅ Website fully functional
+✅ Admin dashboard created
+✅ Firebase integration added
+⏳ Firebase credentials needed (see below)
+
+🌐 LIVE WEBSITE
+─────────────────────────────────────────────────────────────
+URL: https://falcon-furniture-sigma.vercel.app/
+GitHub: https://github.com/ruchitha1919/FalconFurniture
+
+📄 PAGES
+─────────────────────────────────────────────────────────────
+• Homepage: /index.html
+• Product Details: /product-details.html
+• Shopping Cart: /cart.html
+• Admin Login: /admin-login.html
+• Admin Dashboard: /admin-dashboard.html
+
+🔐 ADMIN CREDENTIALS
+─────────────────────────────────────────────────────────────
+Email: admin@falconfurniture.com
+Password: admin123
+
+⚠️ IMPORTANT: FIREBASE SETUP REQUIRED
+─────────────────────────────────────────────────────────────
+The admin dashboard uses Firebase for:
+• Admin authentication
+• Product storage
+• Banner storage
+• Image uploads
+
+Without Firebase setup, it will use localStorage (data won't 
+persist across deployments).
+
+🚀 FIREBASE SETUP (5 MINUTES)
+─────────────────────────────────────────────────────────────
+
+STEP 1: Create Firebase Project
+→ Go to: https://console.firebase.google.com/
+→ Click "Add project"
+→ Name: falcon-furniture
+→ Click "Create project"
+
+STEP 2: Add Web App
+→ Click Web icon (</>)
+→ Nickname: Falcon Furniture Web
+→ Register app
+→ COPY the firebaseConfig object
+
+STEP 3: Enable Services
+→ Authentication → Sign-in method → Enable Email/Password
+→ Authentication → Users → Add user:
+   Email: admin@falconfurniture.com
+   Password: admin123
+
+→ Realtime Database → Create Database → Test mode
+→ Storage → Get started → Test mode
+
+STEP 4: Update firebase-config.js
+→ Open: firebase-config.js
+→ Replace placeholder values with your Firebase config
+→ Save file
+
+STEP 5: Deploy
+→ git add firebase-config.js
+→ git commit -m "Added Firebase credentials"
+→ git push
+
+STEP 6: Test
+→ Visit: https://falcon-furniture-sigma.vercel.app/admin-login.html
+→ Login with admin credentials
+→ Add a test product
+→ Check Firebase Console to verify data
+
+📚 DETAILED GUIDES
+─────────────────────────────────────────────────────────────
+• Complete setup: See FIREBASE_SETUP.md
+• Project overview: See README.md
+
+🎨 FEATURES
+─────────────────────────────────────────────────────────────
+Customer Side:
+✓ Hero carousel
+✓ Product grid
+✓ Product details with zoom
+✓ Color selection
+✓ Shopping cart
+✓ Wishlist modal
+✓ Sticky navbar
+
+Admin Side:
+✓ Secure login
+✓ Product management (add/edit/delete)
+✓ Banner management
+✓ Image upload with preview
+✓ Firebase integration
+✓ Dashboard statistics
+
+🛠️ TECH STACK
+─────────────────────────────────────────────────────────────
+• HTML5, CSS3, JavaScript
+• Firebase (Auth, Database, Storage)
+• Vercel (Hosting)
+• Font Awesome (Icons)
+
+📞 NEED HELP?
+─────────────────────────────────────────────────────────────
+1. Check browser console for errors
+2. Review FIREBASE_SETUP.md for detailed instructions
+3. Verify Firebase services are enabled
+4. Check Firebase Console for data
+
+═══════════════════════════════════════════════════════════════
+Last Updated: May 11, 2026
+═══════════════════════════════════════════════════════════════
