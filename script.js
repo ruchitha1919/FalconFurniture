@@ -1,11 +1,363 @@
-// Cart Management
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
-let wishlist = JSON.parse(localStorage.getItem('falconWishlist')) || [];
+// ============================================
+// USER AUTHENTICATION SYSTEM
+// ============================================
+
+// Current logged-in user
+let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+
+// Get all users from localStorage
+function getAllUsers() {
+    return JSON.parse(localStorage.getItem('falconUsers')) || [];
+}
+
+// Save all users to localStorage
+function saveAllUsers(users) {
+    localStorage.setItem('falconUsers', JSON.stringify(users));
+}
+
+// Get user-specific data key
+function getUserDataKey(userId, dataType) {
+    return `falcon_${userId}_${dataType}`;
+}
+
+// Get current user's cart
+function getUserCart() {
+    if (!currentUser) return [];
+    return JSON.parse(localStorage.getItem(getUserDataKey(currentUser.id, 'cart'))) || [];
+}
+
+// Save current user's cart
+function saveUserCart(cart) {
+    if (!currentUser) return;
+    localStorage.setItem(getUserDataKey(currentUser.id, 'cart'), JSON.stringify(cart));
+}
+
+// Get current user's wishlist
+function getUserWishlist() {
+    if (!currentUser) return [];
+    return JSON.parse(localStorage.getItem(getUserDataKey(currentUser.id, 'wishlist'))) || [];
+}
+
+// Save current user's wishlist
+function saveUserWishlist(wishlist) {
+    if (!currentUser) return;
+    localStorage.setItem(getUserDataKey(currentUser.id, 'wishlist'), JSON.stringify(wishlist));
+}
+
+// Cart and Wishlist Management (User-specific)
+let cart = getUserCart();
+let wishlist = getUserWishlist();
 
 // Firebase products loading
 let products = [];
 
 console.log('Script.js loaded');
+
+// ============================================
+// AUTHENTICATION UI HANDLERS
+// ============================================
+
+// Initialize authentication UI on page load
+document.addEventListener('DOMContentLoaded', function() {
+    initializeAuthUI();
+    setupAuthEventListeners();
+});
+
+function initializeAuthUI() {
+    updateUserUIState();
+    updateWishlistBadge();
+    updateCartBadge();
+}
+
+function updateUserUIState() {
+    const userProfileIcon = document.getElementById('userProfileIcon');
+    const profileName = document.getElementById('profileName');
+    const profileEmail = document.getElementById('profileEmail');
+    const profileAvatar = document.getElementById('profileAvatar');
+    
+    if (currentUser) {
+        // User is logged in
+        if (userProfileIcon) {
+            userProfileIcon.classList.add('user-logged-in');
+            userProfileIcon.querySelector('i').classList.remove('far');
+            userProfileIcon.querySelector('i').classList.add('fas');
+        }
+        
+        if (profileName) profileName.textContent = currentUser.name;
+        if (profileEmail) profileEmail.textContent = currentUser.email;
+        if (profileAvatar) profileAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
+    } else {
+        // User is not logged in
+        if (userProfileIcon) {
+            userProfileIcon.classList.remove('user-logged-in');
+            userProfileIcon.querySelector('i').classList.remove('fas');
+            userProfileIcon.querySelector('i').classList.add('far');
+        }
+    }
+}
+
+function setupAuthEventListeners() {
+    // User profile icon click
+    const userProfileIcon = document.getElementById('userProfileIcon');
+    const userProfileDropdown = document.getElementById('userProfileDropdown');
+    const authModal = document.getElementById('authModal');
+    
+    if (userProfileIcon) {
+        userProfileIcon.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (currentUser) {
+                // Show profile dropdown
+                const isVisible = userProfileDropdown.style.display === 'block';
+                userProfileDropdown.style.display = isVisible ? 'none' : 'block';
+            } else {
+                // Show login modal
+                showAuthModal('login');
+            }
+        });
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (userProfileDropdown && !userProfileIcon.contains(e.target) && !userProfileDropdown.contains(e.target)) {
+            userProfileDropdown.style.display = 'none';
+        }
+    });
+    
+    // Auth modal close button
+    const authModalClose = document.getElementById('authModalClose');
+    if (authModalClose) {
+        authModalClose.addEventListener('click', function() {
+            authModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+    }
+    
+    // Close auth modal when clicking outside
+    if (authModal) {
+        authModal.addEventListener('click', function(e) {
+            if (e.target === authModal) {
+                authModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+    }
+    
+    // Toggle between login and signup
+    const showSignupLink = document.getElementById('showSignupLink');
+    const showLoginLink = document.getElementById('showLoginLink');
+    const loginFormContainer = document.getElementById('loginFormContainer');
+    const signupFormContainer = document.getElementById('signupFormContainer');
+    
+    if (showSignupLink) {
+        showSignupLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            loginFormContainer.style.display = 'none';
+            signupFormContainer.style.display = 'block';
+        });
+    }
+    
+    if (showLoginLink) {
+        showLoginLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            signupFormContainer.style.display = 'none';
+            loginFormContainer.style.display = 'block';
+        });
+    }
+    
+    // Login form submission
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleLogin);
+    }
+    
+    // Signup form submission
+    const signupForm = document.getElementById('signupForm');
+    if (signupForm) {
+        signupForm.addEventListener('submit', handleSignup);
+    }
+    
+    // Logout button
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+    }
+    
+    // View wishlist from profile dropdown
+    const viewWishlistLink = document.getElementById('viewWishlistLink');
+    if (viewWishlistLink) {
+        viewWishlistLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            userProfileDropdown.style.display = 'none';
+            showWishlistItems();
+        });
+    }
+}
+
+function showAuthModal(mode = 'login') {
+    const authModal = document.getElementById('authModal');
+    const loginFormContainer = document.getElementById('loginFormContainer');
+    const signupFormContainer = document.getElementById('signupFormContainer');
+    
+    if (mode === 'login') {
+        loginFormContainer.style.display = 'block';
+        signupFormContainer.style.display = 'none';
+    } else {
+        loginFormContainer.style.display = 'none';
+        signupFormContainer.style.display = 'block';
+    }
+    
+    authModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function handleLogin(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    
+    const users = getAllUsers();
+    const user = users.find(u => u.email === email && u.password === password);
+    
+    if (user) {
+        // Login successful
+        currentUser = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone
+        };
+        
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // Load user's cart and wishlist
+        cart = getUserCart();
+        wishlist = getUserWishlist();
+        
+        // Update UI
+        updateUserUIState();
+        updateWishlistBadge();
+        updateCartBadge();
+        
+        // Close modal
+        document.getElementById('authModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+        
+        // Reset form
+        document.getElementById('loginForm').reset();
+        
+        // Show success message
+        alert(`Welcome back, ${currentUser.name}!`);
+        
+        // Re-render products if on homepage
+        if (document.getElementById('productGrid')) {
+            renderProducts();
+        }
+    } else {
+        alert('Invalid email or password. Please try again.');
+    }
+}
+
+function handleSignup(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const phone = document.getElementById('signupPhone').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    
+    const users = getAllUsers();
+    
+    // Check if email already exists
+    if (users.some(u => u.email === email)) {
+        alert('An account with this email already exists. Please login.');
+        return;
+    }
+    
+    // Create new user
+    const newUser = {
+        id: 'user_' + Date.now(),
+        name: name,
+        email: email,
+        phone: phone,
+        password: password,
+        createdAt: new Date().toISOString()
+    };
+    
+    users.push(newUser);
+    saveAllUsers(users);
+    
+    // Auto-login the new user
+    currentUser = {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        phone: newUser.phone
+    };
+    
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    
+    // Initialize empty cart and wishlist for new user
+    cart = [];
+    wishlist = [];
+    saveUserCart(cart);
+    saveUserWishlist(wishlist);
+    
+    // Update UI
+    updateUserUIState();
+    updateWishlistBadge();
+    updateCartBadge();
+    
+    // Close modal
+    document.getElementById('authModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    
+    // Reset form
+    document.getElementById('signupForm').reset();
+    
+    // Show success message
+    alert(`Welcome to Falcon Furniture, ${currentUser.name}! Your account has been created successfully.`);
+    
+    // Re-render products if on homepage
+    if (document.getElementById('productGrid')) {
+        renderProducts();
+    }
+}
+
+function handleLogout(e) {
+    e.preventDefault();
+    
+    if (confirm('Are you sure you want to logout?')) {
+        // Clear current user
+        currentUser = null;
+        localStorage.removeItem('currentUser');
+        
+        // Clear cart and wishlist
+        cart = [];
+        wishlist = [];
+        
+        // Update UI
+        updateUserUIState();
+        updateWishlistBadge();
+        updateCartBadge();
+        
+        // Hide dropdown
+        document.getElementById('userProfileDropdown').style.display = 'none';
+        
+        // Show message
+        alert('You have been logged out successfully.');
+        
+        // Re-render products if on homepage
+        if (document.getElementById('productGrid')) {
+            renderProducts();
+        }
+    }
+}
+
+// ============================================
+// ORIGINAL CODE CONTINUES
+// ============================================
 
 // Wait for Firebase to be ready
 function initializeProducts() {
@@ -118,6 +470,13 @@ function renderProducts() {
 function toggleWishlist(event, productId) {
     event.stopPropagation();
     
+    // Check if user is logged in
+    if (!currentUser) {
+        alert('Please login to add items to your wishlist.');
+        showAuthModal('login');
+        return;
+    }
+    
     const product = products.find(p => p.id === productId);
     if (!product) return;
 
@@ -127,8 +486,8 @@ function toggleWishlist(event, productId) {
         // Remove from wishlist
         wishlist.splice(existingIndex, 1);
         
-        // Save to localStorage
-        localStorage.setItem('falconWishlist', JSON.stringify(wishlist));
+        // Save to user's wishlist
+        saveUserWishlist(wishlist);
         
         // Update wishlist badge
         updateWishlistBadge();
@@ -136,7 +495,7 @@ function toggleWishlist(event, productId) {
         // Re-render products to update wishlist icons
         renderProducts();
     } else {
-        // Add to wishlist temporarily
+        // Add to wishlist
         wishlist.push({
             id: product.id,
             name: product.name,
@@ -144,17 +503,25 @@ function toggleWishlist(event, productId) {
             image: product.image
         });
         
-        // Save to localStorage
-        localStorage.setItem('falconWishlist', JSON.stringify(wishlist));
+        // Save to user's wishlist
+        saveUserWishlist(wishlist);
         
         // Update wishlist badge
         updateWishlistBadge();
         
-        // Show wishlist form modal to collect user details
-        showWishlistForm();
-        
         // Re-render products to update wishlist icons
         renderProducts();
+        
+        // Show success message
+        const btn = event.currentTarget;
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i>';
+        btn.style.background = 'rgba(39, 174, 96, 0.98)';
+        
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.background = '';
+        }, 1000);
     }
 }
 
@@ -179,6 +546,38 @@ function goToProductDetails(productId) {
 // Format price with commas
 function formatPrice(price) {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+// Add to cart function
+function addToCart(productId) {
+    // Check if user is logged in
+    if (!currentUser) {
+        alert('Please login to add items to your cart.');
+        showAuthModal('login');
+        return;
+    }
+    
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    
+    const existingItem = cart.find(item => item.id === productId);
+    
+    if (existingItem) {
+        existingItem.quantity = (existingItem.quantity || 1) + 1;
+    } else {
+        cart.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            quantity: 1
+        });
+    }
+    
+    saveUserCart(cart);
+    updateCartBadge();
+    
+    alert('Product added to cart!');
 }
 
 // Default products (fallback)
@@ -250,7 +649,7 @@ function getDefaultProducts() {
 function updateCartBadge() {
     const cartBadge = document.getElementById('cartBadge');
     if (cartBadge) {
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
         
         if (totalItems > 0) {
             cartBadge.textContent = totalItems;
@@ -420,6 +819,14 @@ const wishlistItemsContainer = document.getElementById('wishlistItemsContainer')
 if (wishlistIcon) {
     wishlistIcon.addEventListener('click', function(e) {
         e.preventDefault();
+        
+        // Check if user is logged in
+        if (!currentUser) {
+            alert('Please login to view your wishlist.');
+            showAuthModal('login');
+            return;
+        }
+        
         showWishlistItems();
     });
 }
@@ -470,7 +877,7 @@ function removeFromWishlistModal(productId) {
     const index = wishlist.findIndex(item => item.id === productId);
     if (index > -1) {
         wishlist.splice(index, 1);
-        localStorage.setItem('falconWishlist', JSON.stringify(wishlist));
+        saveUserWishlist(wishlist);
         updateWishlistBadge();
         showWishlistItems(); // Refresh the modal
         

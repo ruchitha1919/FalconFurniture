@@ -2086,3 +2086,187 @@ html {
         bottom: 20px;
     }
 }
+
+/* User Profile Dropdown */
+.user-profile-dropdown {
+    position: absolute;
+    top: 70px;
+    right: 60px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    width: 280px;
+    z-index: 10000;
+    border: 1px solid rgba(139, 94, 60, 0.1);
+    animation: dropdownSlideIn 0.3s ease;
+}
+
+@keyframes dropdownSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.profile-dropdown-header {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: linear-gradient(135deg, rgba(139, 94, 60, 0.05) 0%, rgba(160, 82, 45, 0.05) 100%);
+    border-radius: 12px 12px 0 0;
+}
+
+.profile-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-brown), var(--secondary-brown));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(139, 94, 60, 0.3);
+}
+
+.profile-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-email {
+    font-size: 13px;
+    color: var(--text-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-dropdown-divider {
+    height: 1px;
+    background: var(--border-light);
+    margin: 8px 0;
+}
+
+.profile-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    color: var(--text-dark);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.profile-dropdown-item:hover {
+    background: rgba(139, 94, 60, 0.05);
+    color: var(--primary-brown);
+}
+
+.profile-dropdown-item i {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+    color: var(--primary-brown);
+}
+
+.profile-dropdown-item:last-child {
+    border-radius: 0 0 12px 12px;
+    color: #e74c3c;
+}
+
+.profile-dropdown-item:last-child i {
+    color: #e74c3c;
+}
+
+.profile-dropdown-item:last-child:hover {
+    background: rgba(231, 76, 60, 0.05);
+}
+
+/* User Icon States */
+.icon-link.user-logged-in {
+    background: linear-gradient(135deg, rgba(139, 94, 60, 0.1), rgba(160, 82, 45, 0.1));
+    color: var(--primary-brown);
+}
+
+.icon-link.user-logged-in i {
+    font-weight: 900;
+}
+
+/* Auth Modal Enhancements */
+#authModal .wishlist-modal-content {
+    max-width: 450px;
+}
+
+#authModal h2 {
+    font-size: 26px;
+    margin-bottom: 8px;
+}
+
+#authModal .wishlist-form {
+    gap: 18px;
+}
+
+#authModal .form-group-wishlist label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+#authModal .form-group-wishlist input {
+    padding: 13px 16px;
+    font-size: 15px;
+    border: 2px solid var(--border-light);
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+#authModal .form-group-wishlist input:focus {
+    border-color: var(--primary-brown);
+    box-shadow: 0 0 0 3px rgba(139, 94, 60, 0.1);
+}
+
+#authModal .wishlist-submit-btn {
+    margin-top: 10px;
+    padding: 15px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Cart Badge */
+#cartBadge {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+/* Responsive Profile Dropdown */
+@media (max-width: 768px) {
+    .user-profile-dropdown {
+        right: 20px;
+        width: 260px;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-profile-dropdown {
+        right: 10px;
+        left: 10px;
+        width: auto;
+    }
+}
