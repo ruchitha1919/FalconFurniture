@@ -151,11 +151,7 @@ function toggleWishlist(event, productId) {
         updateWishlistBadge();
         
         // Show wishlist form modal to collect user details
-        const wishlistModal = document.getElementById('wishlistModal');
-        if (wishlistModal) {
-            wishlistModal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
+        showWishlistForm();
         
         // Re-render products to update wishlist icons
         renderProducts();
@@ -415,16 +411,103 @@ const wishlistIcon = document.getElementById('wishlistIcon');
 const wishlistModalClose = document.getElementById('wishlistModalClose');
 const wishlistForm = document.getElementById('wishlistForm');
 
-// Open wishlist modal when wishlist icon is clicked
+// Wishlist Items Modal
+const wishlistItemsModal = document.getElementById('wishlistItemsModal');
+const wishlistItemsModalClose = document.getElementById('wishlistItemsModalClose');
+const wishlistItemsContainer = document.getElementById('wishlistItemsContainer');
+
+// Open wishlist items modal when navbar wishlist icon is clicked
 if (wishlistIcon) {
     wishlistIcon.addEventListener('click', function(e) {
         e.preventDefault();
-        wishlistModal.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        showWishlistItems();
     });
 }
 
-// Close wishlist modal when close button is clicked
+// Function to show wishlist items
+function showWishlistItems() {
+    if (!wishlistItemsModal || !wishlistItemsContainer) return;
+    
+    if (wishlist.length === 0) {
+        wishlistItemsContainer.innerHTML = `
+            <div style="text-align: center; padding: 60px 20px; color: #999;">
+                <i class="fas fa-heart-broken" style="font-size: 64px; margin-bottom: 20px; opacity: 0.3;"></i>
+                <p style="font-size: 18px; margin-bottom: 10px;">Your wishlist is empty</p>
+                <p style="font-size: 14px;">Add products to your wishlist by clicking the heart icon</p>
+            </div>
+        `;
+    } else {
+        wishlistItemsContainer.innerHTML = `
+            <div class="wishlist-items-grid">
+                ${wishlist.map(item => `
+                    <div class="wishlist-item-card">
+                        <button class="remove-wishlist-btn" onclick="removeFromWishlistModal('${item.id}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <img src="${item.image}" alt="${item.name}" class="wishlist-item-image">
+                        <div class="wishlist-item-info">
+                            <h4>${item.name}</h4>
+                            <p class="wishlist-item-price">₹${formatPrice(item.price)}</p>
+                            <button class="view-product-btn" onclick="goToProductDetails('${item.id}')">
+                                View Product
+                            </button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                <p style="color: #666; margin-bottom: 15px;">Total Items: ${wishlist.length}</p>
+            </div>
+        `;
+    }
+    
+    wishlistItemsModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+// Remove item from wishlist in modal
+function removeFromWishlistModal(productId) {
+    const index = wishlist.findIndex(item => item.id === productId);
+    if (index > -1) {
+        wishlist.splice(index, 1);
+        localStorage.setItem('falconWishlist', JSON.stringify(wishlist));
+        updateWishlistBadge();
+        showWishlistItems(); // Refresh the modal
+        
+        // Re-render products if on homepage
+        if (document.getElementById('productGrid')) {
+            renderProducts();
+        }
+    }
+}
+
+// Close wishlist items modal
+if (wishlistItemsModalClose) {
+    wishlistItemsModalClose.addEventListener('click', function() {
+        wishlistItemsModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+}
+
+// Close wishlist items modal when clicking outside
+if (wishlistItemsModal) {
+    wishlistItemsModal.addEventListener('click', function(e) {
+        if (e.target === wishlistItemsModal) {
+            wishlistItemsModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    });
+}
+
+// Open wishlist form modal (used when adding products)
+function showWishlistForm() {
+    if (wishlistModal) {
+        wishlistModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+// Close wishlist form modal when close button is clicked
 if (wishlistModalClose) {
     wishlistModalClose.addEventListener('click', function() {
         wishlistModal.style.display = 'none';
