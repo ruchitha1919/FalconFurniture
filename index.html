@@ -279,87 +279,24 @@
     <section class="category-section">
         <div class="container">
             <h2 class="section-title">Shop by Category</h2>
-            <div class="category-grid">
-                <!-- Living Room Card -->
-                <div class="category-card">
-                    <div class="category-image">
-                        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop" alt="Living Room">
-                        <div class="category-overlay"></div>
-                    </div>
-                    <div class="category-info">
-                        <div class="category-text">
-                            <h3 class="category-title">Living Room</h3>
-                            <p class="category-count">120+ Products</p>
-                        </div>
-                        <a href="living-room.html" class="category-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                    <div class="subcategory-dropdown">
-                        <ul class="subcategory-list">
-                            <li><a href="living-room.html"><i class="fas fa-couch"></i> Sofas & Couches</a></li>
-                            <li><a href="living-room.html"><i class="fas fa-tv"></i> TV Stands</a></li>
-                            <li><a href="living-room.html"><i class="fas fa-table"></i> Coffee Tables</a></li>
-                            <li><a href="living-room.html"><i class="fas fa-chair"></i> Accent Chairs</a></li>
-                            <li><a href="living-room.html"><i class="fas fa-book"></i> Bookshelves</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Bedroom Card -->
-                <div class="category-card">
-                    <div class="category-image">
-                        <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=600&h=400&fit=crop" alt="Bedroom">
-                        <div class="category-overlay"></div>
-                    </div>
-                    <div class="category-info">
-                        <div class="category-text">
-                            <h3 class="category-title">Bedroom</h3>
-                            <p class="category-count">95+ Products</p>
-                        </div>
-                        <a href="bedroom.html" class="category-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                    <div class="subcategory-dropdown">
-                        <ul class="subcategory-list">
-                            <li><a href="bedroom.html"><i class="fas fa-bed"></i> Beds & Frames</a></li>
-                            <li><a href="bedroom.html"><i class="fas fa-box"></i> Dressers</a></li>
-                            <li><a href="bedroom.html"><i class="fas fa-moon"></i> Nightstands</a></li>
-                            <li><a href="bedroom.html"><i class="fas fa-door-open"></i> Wardrobes</a></li>
-                            <li><a href="bedroom.html"><i class="fas fa-compress"></i> Mattresses</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Office Card -->
-                <div class="category-card">
-                    <div class="category-image">
-                        <img src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=600&h=400&fit=crop" alt="Office">
-                        <div class="category-overlay"></div>
-                    </div>
-                    <div class="category-info">
-                        <div class="category-text">
-                            <h3 class="category-title">Office</h3>
-                            <p class="category-count">80+ Products</p>
-                        </div>
-                        <a href="office.html" class="category-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </div>
-                    <div class="subcategory-dropdown">
-                        <ul class="subcategory-list">
-                            <li><a href="office.html"><i class="fas fa-desktop"></i> Office Desks</a></li>
-                            <li><a href="office.html"><i class="fas fa-chair"></i> Office Chairs</a></li>
-                            <li><a href="office.html"><i class="fas fa-file-alt"></i> Filing Cabinets</a></li>
-                            <li><a href="office.html"><i class="fas fa-bookmark"></i> Bookcases</a></li>
-                            <li><a href="office.html"><i class="fas fa-lightbulb"></i> Desk Lamps</a></li>
-                        </ul>
-                    </div>
-                </div>
+            <div class="category-grid" id="categoryGrid">
+                <!-- Categories will be dynamically loaded -->
             </div>
         </div>
     </section>
+
+    <!-- Category Products Modal -->
+    <div class="category-modal" id="categoryModal">
+        <div class="category-modal-content">
+            <button class="category-modal-close" id="categoryModalClose">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 id="categoryModalTitle">Category Products</h2>
+            <div class="category-products-grid" id="categoryProductsGrid">
+                <!-- Category products will be rendered here -->
+            </div>
+        </div>
+    </div>
 
     <!-- Process Section -->
     <section class="process-section">

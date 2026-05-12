@@ -51,7 +51,184 @@ let wishlist = getUserWishlist();
 // Firebase products loading
 let products = [];
 
+// Define categories with images
+const CATEGORIES = [
+    {
+        name: 'Latest Arrivals',
+        image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=400&fit=crop',
+        icon: 'fas fa-star'
+    },
+    {
+        name: 'Sofas',
+        image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=400&fit=crop',
+        icon: 'fas fa-couch'
+    },
+    {
+        name: 'Sofa Cum Beds',
+        image: 'https://images.unsplash.com/photo-1540574163026-643ea20ade25?w=600&h=400&fit=crop',
+        icon: 'fas fa-bed'
+    },
+    {
+        name: 'Coffee Tables',
+        image: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=600&h=400&fit=crop',
+        icon: 'fas fa-table'
+    },
+    {
+        name: 'Beds',
+        image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=600&h=400&fit=crop',
+        icon: 'fas fa-bed'
+    },
+    {
+        name: 'Wardrobes',
+        image: 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=600&h=400&fit=crop',
+        icon: 'fas fa-door-open'
+    },
+    {
+        name: 'TV Units',
+        image: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=400&fit=crop',
+        icon: 'fas fa-tv'
+    },
+    {
+        name: 'Recliners',
+        image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop',
+        icon: 'fas fa-chair'
+    },
+    {
+        name: 'Dining Sets',
+        image: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&h=400&fit=crop',
+        icon: 'fas fa-utensils'
+    },
+    {
+        name: 'Lounge Chairs',
+        image: 'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=600&h=400&fit=crop',
+        icon: 'fas fa-chair'
+    },
+    {
+        name: 'Mattresses',
+        image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=400&fit=crop',
+        icon: 'fas fa-bed'
+    }
+];
+
 console.log('Script.js loaded');
+
+// ============================================
+// CATEGORY MANAGEMENT
+// ============================================
+
+// Render categories
+function renderCategories() {
+    const categoryGrid = document.getElementById('categoryGrid');
+    if (!categoryGrid) return;
+    
+    categoryGrid.innerHTML = CATEGORIES.map(category => {
+        const categoryProducts = products.filter(p => {
+            if (category.name === 'Latest Arrivals') {
+                // Show products added in last 30 days or with "New" badge
+                return p.badge === 'New' || p.isFeatured;
+            }
+            return p.category === category.name;
+        });
+        
+        const productCount = categoryProducts.length;
+        
+        return `
+            <div class="category-card" onclick="openCategoryModal('${category.name}')">
+                <div class="category-image">
+                    <img src="${category.image}" alt="${category.name}">
+                    <div class="category-overlay"></div>
+                </div>
+                <div class="category-info">
+                    <div class="category-text">
+                        <h3 class="category-title">${category.name}</h3>
+                        <p class="category-count">${productCount} Product${productCount !== 1 ? 's' : ''}</p>
+                    </div>
+                    <div class="category-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Open category modal
+function openCategoryModal(categoryName) {
+    const modal = document.getElementById('categoryModal');
+    const modalTitle = document.getElementById('categoryModalTitle');
+    const productsGrid = document.getElementById('categoryProductsGrid');
+    
+    if (!modal || !modalTitle || !productsGrid) return;
+    
+    // Set title
+    modalTitle.textContent = categoryName;
+    
+    // Filter products by category
+    let categoryProducts = [];
+    
+    if (categoryName === 'Latest Arrivals') {
+        // Show new or featured products
+        categoryProducts = products.filter(p => p.badge === 'New' || p.isFeatured);
+    } else {
+        categoryProducts = products.filter(p => p.category === categoryName);
+    }
+    
+    // Render products
+    if (categoryProducts.length === 0) {
+        productsGrid.innerHTML = `
+            <div class="category-empty" style="grid-column: 1/-1;">
+                <i class="fas fa-box-open"></i>
+                <h3>No Products Yet</h3>
+                <p>Products in this category will appear here soon</p>
+            </div>
+        `;
+    } else {
+        productsGrid.innerHTML = categoryProducts.map(product => {
+            const isInWishlist = wishlist.some(item => item.id === product.id);
+            return `
+                <div class="product-card">
+                    <div class="product-image-wrapper">
+                        <button class="wishlist-icon-btn ${isInWishlist ? 'active' : ''}" onclick="toggleWishlist(event, '${product.id}')">
+                            <i class="${isInWishlist ? 'fas' : 'far'} fa-heart"></i>
+                        </button>
+                        ${product.badge ? `<span class="product-badge ${product.badge.toLowerCase()}">${product.badge}</span>` : ''}
+                        <img src="${product.image}" alt="${product.name}" class="product-image" onclick="goToProductDetails('${product.id}')">
+                    </div>
+                    <div class="product-info" onclick="goToProductDetails('${product.id}')">
+                        <h3 class="product-name">${product.name}</h3>
+                        <div class="product-price">
+                            <span class="current-price">₹${formatPrice(product.price)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    // Show modal
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+// Close category modal
+const categoryModalClose = document.getElementById('categoryModalClose');
+const categoryModal = document.getElementById('categoryModal');
+
+if (categoryModalClose) {
+    categoryModalClose.addEventListener('click', function() {
+        categoryModal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    });
+}
+
+if (categoryModal) {
+    categoryModal.addEventListener('click', function(e) {
+        if (e.target === categoryModal) {
+            categoryModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    });
+}
 
 // ============================================
 // AUTHENTICATION UI HANDLERS
@@ -61,6 +238,11 @@ console.log('Script.js loaded');
 document.addEventListener('DOMContentLoaded', function() {
     initializeAuthUI();
     setupAuthEventListeners();
+    
+    // Load categories
+    if (document.getElementById('categoryGrid')) {
+        renderCategories();
+    }
 });
 
 function initializeAuthUI() {
@@ -464,6 +646,11 @@ function renderProducts() {
             </div>
         `;
     }).join('');
+    
+    // Update categories after products are rendered
+    if (document.getElementById('categoryGrid')) {
+        renderCategories();
+    }
 }
 
 // Toggle wishlist
