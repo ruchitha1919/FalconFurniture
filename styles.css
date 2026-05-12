@@ -40,40 +40,102 @@ body {
     }
 }
 
-/* Top Bar - Glassmorphism */
+/* Top Bar - Enhanced Marquee Animation */
 .top-bar {
     background: linear-gradient(135deg, var(--primary-brown) 0%, var(--secondary-brown) 100%);
     color: white;
-    padding: 12px 0;
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.3px;
+    padding: 14px 0;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
     backdrop-filter: blur(10px);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(139, 94, 60, 0.3);
 }
 
-.top-bar-content {
+.top-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.3) 50%, 
+        transparent 100%);
+}
+
+.top-bar-marquee {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.marquee-content {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    animation: marqueeScroll 30s linear infinite;
+    will-change: transform;
 }
 
-.top-bar-left {
-    display: flex;
-    gap: 40px;
+.marquee-text {
+    display: inline-block;
+    white-space: nowrap;
+    padding: 0 80px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.top-bar-left span,
-.top-bar-right span {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: var(--transition);
+@keyframes marqueeScroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
 }
 
-.top-bar-left span:hover,
-.top-bar-right span:hover {
-    opacity: 0.85;
-    transform: translateY(-1px);
+/* Pause animation on hover */
+.top-bar:hover .marquee-content {
+    animation-play-state: paused;
+}
+
+/* Responsive Marquee */
+@media (max-width: 768px) {
+    .top-bar {
+        padding: 12px 0;
+    }
+    
+    .marquee-text {
+        font-size: 12px;
+        padding: 0 60px;
+        letter-spacing: 0.8px;
+    }
+    
+    .marquee-content {
+        animation: marqueeScroll 25s linear infinite;
+    }
+}
+
+@media (max-width: 480px) {
+    .top-bar {
+        padding: 10px 0;
+    }
+    
+    .marquee-text {
+        font-size: 11px;
+        padding: 0 40px;
+        letter-spacing: 0.5px;
+    }
+    
+    .marquee-content {
+        animation: marqueeScroll 20s linear infinite;
+    }
 }
 
 .top-bar i {
