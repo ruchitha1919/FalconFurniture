@@ -60,52 +60,52 @@ const CATEGORIES = [
     },
     {
         name: 'Sofas',
-        image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=400&fit=crop',
+        image: 'https://images.unsplash.com/photo-1550581190-9c1c48d21d6c?w=400&h=400&fit=crop&q=80',
         icon: 'fas fa-couch'
     },
     {
         name: 'Sofa Cum Beds',
-        image: 'https://images.unsplash.com/photo-1540574163026-643ea20ade25?w=600&h=400&fit=crop',
+        image: 'https://images.unsplash.com/photo-1540574163026-643ea20ade25?w=400&h=400&fit=crop&q=80',
         icon: 'fas fa-bed'
     },
     {
         name: 'Coffee Tables',
-        image: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=600&h=400&fit=crop',
+        image: 'https://images.unsplash.com/photo-1565191999001-551c187427bb?w=400&h=400&fit=crop&q=80',
         icon: 'fas fa-table'
     },
     {
         name: 'Beds',
-        image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=600&h=400&fit=crop',
+        image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400&h=400&fit=crop&q=80',
         icon: 'fas fa-bed'
     },
     {
         name: 'Wardrobes',
-        image: 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=600&h=400&fit=crop',
+        image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=400&h=400&fit=crop&q=80',
         icon: 'fas fa-door-open'
     },
     {
         name: 'TV Units',
-        image: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=600&h=400&fit=crop',
+        image: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop&q=80',
         icon: 'fas fa-tv'
     },
     {
         name: 'Recliners',
-        image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop',
+        image: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=400&h=400&fit=crop&q=80',
         icon: 'fas fa-chair'
     },
     {
         name: 'Dining Sets',
-        image: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=600&h=400&fit=crop',
+        image: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=400&h=400&fit=crop&q=80',
         icon: 'fas fa-utensils'
     },
     {
         name: 'Lounge Chairs',
-        image: 'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=600&h=400&fit=crop',
+        image: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?w=400&h=400&fit=crop&q=80',
         icon: 'fas fa-chair'
     },
     {
         name: 'Mattresses',
-        image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=400&fit=crop',
+        image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=400&fit=crop&q=80',
         icon: 'fas fa-bed'
     }
 ];
