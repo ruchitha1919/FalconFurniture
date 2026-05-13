@@ -124,27 +124,26 @@ function renderCategories() {
     categoryGrid.innerHTML = CATEGORIES.map(category => {
         const categoryProducts = products.filter(p => {
             if (category.name === 'Latest Arrivals') {
-                // Show products added in last 30 days or with "New" badge
                 return p.badge === 'New' || p.isFeatured;
             }
             return p.category === category.name;
         });
         
         const productCount = categoryProducts.length;
+        const isLatestArrivals = category.name === 'Latest Arrivals';
         
         return `
-            <div class="category-card" onclick="openCategoryModal('${category.name}')">
+            <div class="category-card ${isLatestArrivals ? 'latest-arrivals' : ''}" onclick="openCategoryModal('${category.name}')">
                 <div class="category-image">
-                    <img src="${category.image}" alt="${category.name}">
-                    <div class="category-overlay"></div>
+                    ${isLatestArrivals ? 
+                        `<div class="category-badge"><i class="${category.icon}"></i></div>` : 
+                        `<img src="${category.image}" alt="${category.name}">`
+                    }
                 </div>
                 <div class="category-info">
                     <div class="category-text">
                         <h3 class="category-title">${category.name}</h3>
                         <p class="category-count">${productCount} Product${productCount !== 1 ? 's' : ''}</p>
-                    </div>
-                    <div class="category-arrow">
-                        <i class="fas fa-arrow-right"></i>
                     </div>
                 </div>
             </div>
