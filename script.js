@@ -54,11 +54,6 @@ let products = [];
 // Define categories with images
 const CATEGORIES = [
     {
-        name: 'Latest Arrivals',
-        image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=400&fit=crop',
-        icon: 'fas fa-star'
-    },
-    {
         name: 'Sofas',
         image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500&h=500&fit=crop&q=90',
         icon: 'fas fa-couch'
@@ -122,23 +117,13 @@ function renderCategories() {
     if (!categoryGrid) return;
     
     categoryGrid.innerHTML = CATEGORIES.map(category => {
-        const categoryProducts = products.filter(p => {
-            if (category.name === 'Latest Arrivals') {
-                return p.badge === 'New' || p.isFeatured;
-            }
-            return p.category === category.name;
-        });
-        
+        const categoryProducts = products.filter(p => p.category === category.name);
         const productCount = categoryProducts.length;
-        const isLatestArrivals = category.name === 'Latest Arrivals';
         
         return `
-            <div class="category-card ${isLatestArrivals ? 'latest-arrivals' : ''}" onclick="openCategoryModal('${category.name}')">
+            <div class="category-card" onclick="openCategoryModal('${category.name}')">
                 <div class="category-image">
-                    ${isLatestArrivals ? 
-                        `<div class="category-badge"><i class="${category.icon}"></i></div>` : 
-                        `<img src="${category.image}" alt="${category.name}">`
-                    }
+                    <img src="${category.image}" alt="${category.name}">
                 </div>
                 <div class="category-info">
                     <div class="category-text">
@@ -165,12 +150,7 @@ function openCategoryModal(categoryName) {
     // Filter products by category
     let categoryProducts = [];
     
-    if (categoryName === 'Latest Arrivals') {
-        // Show new or featured products
-        categoryProducts = products.filter(p => p.badge === 'New' || p.isFeatured);
-    } else {
-        categoryProducts = products.filter(p => p.category === categoryName);
-    }
+    categoryProducts = products.filter(p => p.category === categoryName);
     
     // Render products
     if (categoryProducts.length === 0) {
