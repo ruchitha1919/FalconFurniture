@@ -607,6 +607,8 @@ function renderProducts() {
 
     productGrid.innerHTML = products.map(product => {
         const isInWishlist = wishlist.some(item => item.id === product.id);
+        const hasDiscount = product.originalPrice && product.originalPrice > product.price;
+        
         return `
             <div class="product-card">
                 <div class="product-image-wrapper">
@@ -620,6 +622,10 @@ function renderProducts() {
                     <h3 class="product-name">${product.name}</h3>
                     <div class="product-price">
                         <span class="current-price">₹${formatPrice(product.price)}</span>
+                        ${hasDiscount ? `
+                            <span class="original-price">₹${formatPrice(product.originalPrice)}</span>
+                            <span class="discount">${product.discount}% OFF</span>
+                        ` : ''}
                     </div>
                 </div>
             </div>
@@ -746,69 +752,9 @@ function addToCart(productId) {
     alert('Product added to cart!');
 }
 
-// Default products (fallback)
+// Default products (fallback) - REMOVED: Only show products from admin dashboard
 function getDefaultProducts() {
-    return [
-        {
-            id: 'default-1',
-            name: 'Modern L-Shape Sofa',
-            price: '45999',
-            image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop',
-            category: 'Living Room',
-            badge: 'New'
-        },
-        {
-            id: 'default-2',
-            name: 'Luxury King Size Bed',
-            price: '32499',
-            image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400&h=400&fit=crop',
-            category: 'Bedroom',
-            badge: 'Sale'
-        },
-        {
-            id: 'default-3',
-            name: 'Ergonomic Office Chair',
-            price: '12999',
-            image: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?w=400&h=400&fit=crop',
-            category: 'Office'
-        },
-        {
-            id: 'default-4',
-            name: '6-Seater Dining Table Set',
-            price: '28999',
-            image: 'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=400&h=400&fit=crop',
-            category: 'Dining',
-            badge: 'New'
-        },
-        {
-            id: 'default-5',
-            name: 'Modern Office Desk',
-            price: '15999',
-            image: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=400&h=400&fit=crop',
-            category: 'Office'
-        },
-        {
-            id: 'default-6',
-            name: 'Comfortable Recliner',
-            price: '22999',
-            image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop',
-            category: 'Living Room'
-        },
-        {
-            id: 'default-7',
-            name: 'Wooden Wardrobe',
-            price: '35999',
-            image: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=400&h=400&fit=crop',
-            category: 'Bedroom'
-        },
-        {
-            id: 'default-8',
-            name: 'Study Table with Storage',
-            price: '18999',
-            image: 'https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?w=400&h=400&fit=crop',
-            category: 'Office'
-        }
-    ];
+    return [];
 }
 
 // Update cart badge
