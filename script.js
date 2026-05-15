@@ -564,17 +564,20 @@ function initializeProducts() {
                     console.log('No Firebase products, using defaults');
                     products = getDefaultProducts();
                 }
-                renderProducts();
+                // Update categories after products load
+                renderCategories();
             }, (error) => {
                 console.error('Firebase error:', error);
                 products = getDefaultProducts();
-                renderProducts();
+                // Update categories after products load
+                renderCategories();
             });
         } else {
             console.log('Firebase not available, using default products');
             // Use default products if Firebase not available
             products = getDefaultProducts();
-            renderProducts();
+            // Update categories after products load
+            renderCategories();
         }
     }
 
@@ -594,51 +597,10 @@ if (document.readyState === 'loading') {
     setTimeout(initializeProducts, 500); // Wait for Firebase to initialize
 }
 
-// Render products to the grid
+// Render products to the grid (REMOVED - Products only shown in categories)
 function renderProducts() {
-    const productGrid = document.getElementById('productGrid');
-    if (!productGrid) return;
-
-    console.log('Rendering products:', products.length);
-
-    if (products.length === 0) {
-        productGrid.innerHTML = `
-            <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: #999;">
-                <i class="fas fa-box-open" style="font-size: 64px; margin-bottom: 20px; opacity: 0.3;"></i>
-                <p style="font-size: 18px;">No products available yet</p>
-            </div>
-        `;
-        return;
-    }
-
-    productGrid.innerHTML = products.map(product => {
-        const isInWishlist = wishlist.some(item => item.id === product.id);
-        const hasDiscount = product.originalPrice && product.originalPrice > product.price;
-        
-        return `
-            <div class="product-card">
-                <div class="product-image-wrapper">
-                    <button class="wishlist-icon-btn ${isInWishlist ? 'active' : ''}" onclick="toggleWishlist(event, '${product.id}')">
-                        <i class="${isInWishlist ? 'fas' : 'far'} fa-heart"></i>
-                    </button>
-                    ${product.badge ? `<span class="product-badge ${product.badge.toLowerCase()}">${product.badge}</span>` : ''}
-                    <img src="${product.image}" alt="${product.name}" class="product-image" onclick="goToProductDetails('${product.id}')">
-                </div>
-                <div class="product-info" onclick="goToProductDetails('${product.id}')">
-                    <h3 class="product-name">${product.name}</h3>
-                    <div class="product-price">
-                        <span class="current-price">₹${formatPrice(product.price)}</span>
-                        ${hasDiscount ? `
-                            <span class="original-price">₹${formatPrice(product.originalPrice)}</span>
-                            <span class="discount">${product.discount}% OFF</span>
-                        ` : ''}
-                    </div>
-                </div>
-            </div>
-        `;
-    }).join('');
-    
-    // Update categories after products are rendered
+    // Products are now only displayed in category modals
+    // Update categories when products change
     if (document.getElementById('categoryGrid')) {
         renderCategories();
     }
