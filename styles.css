@@ -149,8 +149,10 @@ body {
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
     padding: 0;
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 1000;
     border-bottom: 1px solid rgba(139, 94, 60, 0.1);
     transition: var(--transition);
@@ -2018,6 +2020,7 @@ html {
     height: 700px;
     overflow: hidden;
     margin-bottom: 80px;
+    margin-top: 0;
 }
 
 .hero-carousel {
