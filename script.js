@@ -164,6 +164,8 @@ function openCategoryModal(categoryName) {
     } else {
         productsGrid.innerHTML = categoryProducts.map(product => {
             const isInWishlist = wishlist.some(item => item.id === product.id);
+            const hasDiscount = product.originalPrice && product.originalPrice > product.price;
+            
             return `
                 <div class="product-card">
                     <div class="product-image-wrapper">
@@ -177,6 +179,10 @@ function openCategoryModal(categoryName) {
                         <h3 class="product-name">${product.name}</h3>
                         <div class="product-price">
                             <span class="current-price">₹${formatPrice(product.price)}</span>
+                            ${hasDiscount ? `
+                                <span class="original-price">₹${formatPrice(product.originalPrice)}</span>
+                                <span class="discount">${product.discount}% OFF</span>
+                            ` : ''}
                         </div>
                     </div>
                 </div>
