@@ -206,9 +206,18 @@ if (document.getElementById('adminDashboard')) {
         e.preventDefault();
         
         const productId = document.getElementById('productId').value;
+        const originalPrice = parseFloat(document.getElementById('productOriginalPrice').value);
+        const discountedPrice = parseFloat(document.getElementById('productPrice').value);
+        
+        // Calculate discount percentage
+        const discount = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
+        
         const productData = {
             name: document.getElementById('productName').value,
-            price: document.getElementById('productPrice').value,
+            originalPrice: originalPrice,
+            price: discountedPrice,
+            discount: discount,
+            color: document.getElementById('productColor').value,
             category: document.getElementById('productCategory').value,
             description: document.getElementById('productDescription').value,
             stock: document.getElementById('productStock').value,
@@ -280,7 +289,7 @@ if (document.getElementById('adminDashboard')) {
         if (products.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
+                    <td colspan="8" style="text-align: center; padding: 40px; color: #999;">
                         No products added yet
                     </td>
                 </tr>
@@ -290,7 +299,9 @@ if (document.getElementById('adminDashboard')) {
                 <tr>
                     <td><img src="${product.image}" alt="${product.name}"></td>
                     <td>${product.name}</td>
+                    <td>₹${product.originalPrice || product.price}</td>
                     <td>₹${product.price}</td>
+                    <td>${product.color || 'N/A'}</td>
                     <td>${product.category}</td>
                     <td>${product.stock}</td>
                     <td>
@@ -315,7 +326,9 @@ if (document.getElementById('adminDashboard')) {
         if (product) {
             document.getElementById('productId').value = product.id;
             document.getElementById('productName').value = product.name;
+            document.getElementById('productOriginalPrice').value = product.originalPrice || product.price;
             document.getElementById('productPrice').value = product.price;
+            document.getElementById('productColor').value = product.color || '';
             document.getElementById('productCategory').value = product.category;
             document.getElementById('productDescription').value = product.description;
             document.getElementById('productStock').value = product.stock;

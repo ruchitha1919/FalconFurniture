@@ -138,11 +138,6 @@
                     </div>
                     
                     <div class="form-field">
-                        <label for="productPrice">Price (₹) *</label>
-                        <input type="number" id="productPrice" required placeholder="Enter price">
-                    </div>
-                    
-                    <div class="form-field">
                         <label for="productCategory">Category *</label>
                         <select id="productCategory" required>
                             <option value="">Select Category</option>
@@ -158,6 +153,21 @@
                             <option value="Lounge Chairs">Lounge Chairs</option>
                             <option value="Mattresses">Mattresses</option>
                         </select>
+                    </div>
+                    
+                    <div class="form-field">
+                        <label for="productOriginalPrice">Original Price (₹) *</label>
+                        <input type="number" id="productOriginalPrice" required placeholder="Enter original price">
+                    </div>
+                    
+                    <div class="form-field">
+                        <label for="productPrice">Discounted Price (₹) *</label>
+                        <input type="number" id="productPrice" required placeholder="Enter discounted price">
+                    </div>
+                    
+                    <div class="form-field">
+                        <label for="productColor">Color *</label>
+                        <input type="text" id="productColor" required placeholder="e.g., Brown, Beige, Grey">
                     </div>
                     
                     <div class="form-field">
@@ -194,7 +204,9 @@
                             <tr>
                                 <th>Image</th>
                                 <th>Name</th>
-                                <th>Price</th>
+                                <th>Original Price</th>
+                                <th>Discounted Price</th>
+                                <th>Color</th>
                                 <th>Category</th>
                                 <th>Stock</th>
                                 <th>Actions</th>
@@ -202,7 +214,7 @@
                         </thead>
                         <tbody id="productsTableBody">
                             <tr>
-                                <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
+                                <td colspan="8" style="text-align: center; padding: 40px; color: #999;">
                                     No products added yet
                                 </td>
                             </tr>
