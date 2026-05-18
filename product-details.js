@@ -73,16 +73,23 @@ function renderProductDetails(product) {
     // Update main image
     const mainImage = document.getElementById('mainImage');
     if (mainImage) {
-        mainImage.src = product.image;
+        const mainImageUrl = product.images && product.images.length > 0 ? product.images[0] : product.image;
+        mainImage.src = mainImageUrl;
         mainImage.alt = product.name;
     }
     
-    // Update thumbnails (use same image for now)
-    const thumbnails = document.querySelectorAll('.thumbnail');
-    thumbnails.forEach(thumb => {
-        thumb.src = product.image;
-        thumb.alt = product.name;
-    });
+    // Update thumbnails with multiple images
+    const thumbnailContainer = document.querySelector('.thumbnail-container');
+    if (thumbnailContainer) {
+        const images = product.images && product.images.length > 0 ? product.images : [product.image];
+        
+        thumbnailContainer.innerHTML = images.map((img, index) => `
+            <img src="${img}" alt="${product.name} ${index + 1}" class="thumbnail ${index === 0 ? 'active' : ''}">
+        `).join('');
+        
+        // Re-attach thumbnail click listeners
+        attachThumbnailListeners();
+    }
     
     // Update product title
     const title = document.querySelector('.product-title-detail');
@@ -255,24 +262,32 @@ function updateCartBadge() {
 updateCartBadge();
 
 // Image Gallery - Thumbnail Click
-const thumbnails = document.querySelectorAll('.thumbnail');
-const mainImage = document.getElementById('mainImage');
+function attachThumbnailListeners() {
+    const thumbnails = document.querySelectorAll('.thumbnail');
+    const mainImage = document.getElementById('mainImage');
+    const magnifierBox = document.getElementById('magnifierBox');
 
-thumbnails.forEach(thumbnail => {
-    thumbnail.addEventListener('click', function() {
-        // Remove active class from all thumbnails
-        thumbnails.forEach(t => t.classList.remove('active'));
-        
-        // Add active class to clicked thumbnail
-        this.classList.add('active');
-        
-        // Change main image
-        mainImage.src = this.src.replace('w=200&h=200', 'w=800&h=800');
-        
-        // Update magnifier background
-        magnifierBox.style.backgroundImage = `url('${mainImage.src.replace('w=800&h=800', 'w=1600&h=1600')}')`;
+    thumbnails.forEach(thumbnail => {
+        thumbnail.addEventListener('click', function() {
+            // Remove active class from all thumbnails
+            thumbnails.forEach(t => t.classList.remove('active'));
+            
+            // Add active class to clicked thumbnail
+            this.classList.add('active');
+            
+            // Change main image
+            mainImage.src = this.src;
+            
+            // Update magnifier background
+            if (magnifierBox) {
+                magnifierBox.style.backgroundImage = `url('${mainImage.src}')`;
+            }
+        });
     });
-});
+}
+
+// Initial thumbnail listeners
+attachThumbnailListeners();
 
 // Mouse Magnifier Functionality
 const mainImageContainer = document.getElementById('mainImageContainer');

@@ -183,12 +183,25 @@
                     </div>
                     
                     <div class="form-field full-width">
-                        <label>Product Image</label>
-                        <div class="image-upload">
-                            <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #8B5E3C; margin-bottom: 10px;"></i>
-                            <p>Click to upload product image</p>
-                            <input type="file" id="productImage" accept="image/*">
-                            <img id="imagePreview" class="image-preview" alt="Preview">
+                        <label>Product Images (Upload or URL)</label>
+                        <p style="font-size: 13px; color: #666; margin-bottom: 10px;">You can upload images or provide URLs. At least one image is required.</p>
+                        
+                        <!-- Image Upload Section -->
+                        <div class="image-upload-section" style="margin-bottom: 20px;">
+                            <label style="font-size: 14px; font-weight: 600; margin-bottom: 8px; display: block;">Upload Images</label>
+                            <div class="image-upload">
+                                <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #8B5E3C; margin-bottom: 10px;"></i>
+                                <p>Click to upload product images (multiple allowed)</p>
+                                <input type="file" id="productImages" accept="image/*" multiple>
+                            </div>
+                            <div id="uploadedImagesPreview" class="images-preview-grid"></div>
+                        </div>
+                        
+                        <!-- Image URL Section -->
+                        <div class="image-url-section">
+                            <label for="productImageUrls" style="font-size: 14px; font-weight: 600; margin-bottom: 8px; display: block;">Or Provide Image URLs</label>
+                            <textarea id="productImageUrls" placeholder="Enter image URLs (one per line)&#10;Example:&#10;https://example.com/image1.jpg&#10;https://example.com/image2.jpg" style="min-height: 100px; font-family: monospace; font-size: 13px;"></textarea>
+                            <p style="font-size: 12px; color: #999; margin-top: 5px;">Enter one URL per line. These will be used if no images are uploaded.</p>
                         </div>
                     </div>
                     

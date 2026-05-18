@@ -183,23 +183,55 @@ if (document.getElementById('adminDashboard')) {
 
     // Product Management
     const productForm = document.getElementById('productForm');
-    const imageInput = document.getElementById('productImage');
-    const imagePreview = document.getElementById('imagePreview');
+    const imageInput = document.getElementById('productImages');
+    const imageUrlsInput = document.getElementById('productImageUrls');
+    const uploadedImagesPreview = document.getElementById('uploadedImagesPreview');
     const imageUploadArea = document.querySelector('.image-upload');
+
+    let uploadedFiles = [];
+    let uploadedImageUrls = [];
 
     imageUploadArea.addEventListener('click', () => imageInput.click());
     
+    // Handle multiple image uploads
     imageInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                imagePreview.src = e.target.result;
-                imagePreview.classList.add('show');
-            };
-            reader.readAsDataURL(file);
-        }
+        const files = Array.from(e.target.files);
+        
+        files.forEach(file => {
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedFiles.push(file);
+                    uploadedImageUrls.push(e.target.result);
+                    renderUploadedImages();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Clear input to allow re-uploading same file
+        imageInput.value = '';
     });
+    
+    // Render uploaded images preview
+    function renderUploadedImages() {
+        uploadedImagesPreview.innerHTML = uploadedImageUrls.map((url, index) => `
+            <div class="preview-image-item">
+                <img src="${url}" alt="Preview ${index + 1}">
+                <button type="button" class="preview-image-remove" onclick="removeUploadedImage(${index})">
+                    <i class="fas fa-times"></i>
+                </button>
+                ${index === 0 ? '<span class="preview-image-badge">Main</span>' : ''}
+            </div>
+        `).join('');
+    }
+    
+    // Remove uploaded image
+    window.removeUploadedImage = function(index) {
+        uploadedFiles.splice(index, 1);
+        uploadedImageUrls.splice(index, 1);
+        renderUploadedImages();
+    };
 
     // Add/Edit Product
     productForm.addEventListener('submit', async function(e) {
@@ -212,6 +244,16 @@ if (document.getElementById('adminDashboard')) {
         // Calculate discount percentage
         const discount = Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
         
+        // Get image URLs from textarea
+        const imageUrlsText = imageUrlsInput.value.trim();
+        const providedUrls = imageUrlsText ? imageUrlsText.split('\n').filter(url => url.trim()) : [];
+        
+        // Validate: at least one image required
+        if (uploadedFiles.length === 0 && providedUrls.length === 0) {
+            alert('Please upload at least one image or provide an image URL');
+            return;
+        }
+        
         const productData = {
             name: document.getElementById('productName').value,
             originalPrice: originalPrice,
@@ -221,37 +263,38 @@ if (document.getElementById('adminDashboard')) {
             category: document.getElementById('productCategory').value,
             description: document.getElementById('productDescription').value,
             stock: document.getElementById('productStock').value,
-            image: imagePreview.src || 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=400&fit=crop',
+            images: [], // Will be populated below
+            image: '', // Main image (for backward compatibility)
             createdAt: Date.now()
         };
 
         try {
-            // Upload to Cloudinary if new image file selected
-            if (imageInput.files[0]) {
-                const file = imageInput.files[0];
-                
-                // Show uploading message
-                const submitBtn = productForm.querySelector('button[type="submit"]');
-                const originalText = submitBtn.textContent;
-                submitBtn.textContent = 'Uploading image...';
+            const submitBtn = productForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            // Upload images to Cloudinary if files are selected
+            if (uploadedFiles.length > 0) {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading images...';
                 submitBtn.disabled = true;
 
                 try {
-                    // Upload to Cloudinary
-                    const cloudinaryUrl = await uploadToCloudinary(file, 'products');
-                    productData.image = cloudinaryUrl;
+                    const uploadPromises = uploadedFiles.map(file => uploadToCloudinary(file, 'products'));
+                    const cloudinaryUrls = await Promise.all(uploadPromises);
+                    productData.images = cloudinaryUrls;
+                    productData.image = cloudinaryUrls[0]; // Main image
                     
-                    submitBtn.textContent = 'Saving product...';
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving product...';
                 } catch (uploadError) {
-                    submitBtn.textContent = originalText;
+                    submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
-                    alert('Failed to upload image. Please try again.');
+                    alert('Failed to upload images. Please try again.');
                     console.error('Image upload error:', uploadError);
                     return;
                 }
-                
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
+            } else {
+                // Use provided URLs
+                productData.images = providedUrls;
+                productData.image = providedUrls[0]; // Main image
             }
 
             if (USE_FIREBASE) {
@@ -273,9 +316,16 @@ if (document.getElementById('adminDashboard')) {
                 renderProducts();
             }
 
+            // Reset form and images
             productForm.reset();
-            imagePreview.classList.remove('show');
+            uploadedFiles = [];
+            uploadedImageUrls = [];
+            renderUploadedImages();
             document.getElementById('productId').value = '';
+            
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            
             alert('Product saved successfully!');
         } catch (error) {
             console.error('Error saving product:', error);
@@ -332,8 +382,21 @@ if (document.getElementById('adminDashboard')) {
             document.getElementById('productCategory').value = product.category;
             document.getElementById('productDescription').value = product.description;
             document.getElementById('productStock').value = product.stock;
-            imagePreview.src = product.image;
-            imagePreview.classList.add('show');
+            
+            // Handle multiple images
+            if (product.images && product.images.length > 0) {
+                // Show existing images as URLs in textarea
+                document.getElementById('productImageUrls').value = product.images.join('\n');
+            } else if (product.image) {
+                // Backward compatibility: single image
+                document.getElementById('productImageUrls').value = product.image;
+            }
+            
+            // Clear uploaded files
+            uploadedFiles = [];
+            uploadedImageUrls = [];
+            renderUploadedImages();
+            
             productForm.scrollIntoView({ behavior: 'smooth' });
         }
     };
