@@ -204,6 +204,7 @@ function renderRelatedProducts(category) {
     
     relatedGrid.innerHTML = relatedProducts.map(product => {
         const hasDiscount = product.originalPrice && product.originalPrice > product.price;
+        const mainImage = product.images && product.images.length > 0 ? product.images[0] : product.image;
         
         return `
             <div class="product-card" onclick="window.location.href='product-details.html?id=${product.id}'">
@@ -212,7 +213,7 @@ function renderRelatedProducts(category) {
                     <button class="wishlist-btn" onclick="event.stopPropagation();">
                         <i class="far fa-heart"></i>
                     </button>
-                    <img src="${product.image}" alt="${product.name}" class="product-image">
+                    <img src="${mainImage}" alt="${product.name}" class="product-image">
                 </div>
                 <div class="product-info">
                     <h3 class="product-name">${product.name}</h3>
@@ -399,13 +400,17 @@ if (addToCartDetailBtn) {
         const colorTitle = selectedColor ? selectedColor.getAttribute('title') : 'Default';
         
         // Create product object
+        const mainImage = currentProduct.images && currentProduct.images.length > 0 
+            ? currentProduct.images[0] 
+            : currentProduct.image;
+            
         const product = {
             id: currentProduct.id,
             name: currentProduct.name,
             price: currentProduct.price,
             quantity: quantity,
             color: colorTitle,
-            image: currentProduct.image
+            image: mainImage
         };
         
         // Check if product with same color already exists in cart

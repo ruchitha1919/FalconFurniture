@@ -165,6 +165,7 @@ function openCategoryModal(categoryName) {
         productsGrid.innerHTML = categoryProducts.map(product => {
             const isInWishlist = wishlist.some(item => item.id === product.id);
             const hasDiscount = product.originalPrice && product.originalPrice > product.price;
+            const mainImage = product.images && product.images.length > 0 ? product.images[0] : product.image;
             
             return `
                 <div class="product-card">
@@ -173,7 +174,7 @@ function openCategoryModal(categoryName) {
                             <i class="${isInWishlist ? 'fas' : 'far'} fa-heart"></i>
                         </button>
                         ${product.badge ? `<span class="product-badge ${product.badge.toLowerCase()}">${product.badge}</span>` : ''}
-                        <img src="${product.image}" alt="${product.name}" class="product-image" onclick="goToProductDetails('${product.id}')">
+                        <img src="${mainImage}" alt="${product.name}" class="product-image" onclick="goToProductDetails('${product.id}')">
                     </div>
                     <div class="product-info" onclick="goToProductDetails('${product.id}')">
                         <h3 class="product-name">${product.name}</h3>
